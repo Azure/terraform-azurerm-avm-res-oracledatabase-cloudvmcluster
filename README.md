@@ -7,7 +7,10 @@ Things to do:
 
 1. Set up a GitHub repo environment called `test`.
 1. Configure environment protection rule to ensure that approval is required before deploying to this environment.
-1. Install Docker Desktop to run tests
+1. Create a user-assigned managed identity in your test subscription.
+1. Create a role assignment for the managed identity on your test subscription, use the minimum required role.
+1. Configure federated identity credentials on the user assigned managed identity. Use the GitHub environment.
+1. Search and update TODOs within the code and remove the TODO comments once complete.
 
 > [!IMPORTANT]
 > As the overall AVM framework is not GA (generally available) yet - the CI framework and test automation is not fully functional and implemented across all supported languages yet - breaking changes are expected, and additional customer feedback is yet to be gathered and incorporated. Hence, modules **MUST NOT** be published at version `1.0.0` or higher at this time.
@@ -21,34 +24,21 @@ Things to do:
 
 The following requirements are needed by this module:
 
-- <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) (~> 1.5)
+- <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) (>= 1.9.2)
 
-- <a name="requirement_azurerm"></a> [azurerm](#requirement\_azurerm) (~> 3.71)
+- <a name="requirement_azapi"></a> [azapi](#requirement\_azapi) (~> 1.14.0)
+
+- <a name="requirement_azurerm"></a> [azurerm](#requirement\_azurerm) (~> 3.74)
 
 - <a name="requirement_modtm"></a> [modtm](#requirement\_modtm) (~> 0.3)
 
 - <a name="requirement_random"></a> [random](#requirement\_random) (~> 3.5)
 
-## Providers
-
-The following providers are used by this module:
-
-- <a name="provider_azurerm"></a> [azurerm](#provider\_azurerm) (~> 3.71)
-
-- <a name="provider_modtm"></a> [modtm](#provider\_modtm) (~> 0.3)
-
-- <a name="provider_random"></a> [random](#provider\_random) (~> 3.5)
-
 ## Resources
 
 The following resources are used by this module:
 
-- [azurerm_management_lock.this](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/management_lock) (resource)
-- [azurerm_private_endpoint.this_managed_dns_zone_groups](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/private_endpoint) (resource)
-- [azurerm_private_endpoint.this_unmanaged_dns_zone_groups](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/private_endpoint) (resource)
-- [azurerm_private_endpoint_application_security_group_association.this](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/private_endpoint_application_security_group_association) (resource)
-- [azurerm_resource_group.TODO](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/resource_group) (resource)
-- [azurerm_role_assignment.this](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/role_assignment) (resource)
+- [azapi_resource.odaa_vm_cluster](https://registry.terraform.io/providers/azure/azapi/latest/docs/resources/resource) (resource)
 - [modtm_telemetry.telemetry](https://registry.terraform.io/providers/azure/modtm/latest/docs/resources/telemetry) (resource)
 - [random_uuid.telemetry](https://registry.terraform.io/providers/hashicorp/random/latest/docs/resources/uuid) (resource)
 - [azurerm_client_config.telemetry](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/data-sources/client_config) (data source)
@@ -59,21 +49,93 @@ The following resources are used by this module:
 
 The following input variables are required:
 
+### <a name="input_backup_subnet_cidr"></a> [backup\_subnet\_cidr](#input\_backup\_subnet\_cidr)
+
+Description: The backup subnet CIDR of the cluster.
+
+Type: `string`
+
+### <a name="input_cloud_exadata_infrastructure_id"></a> [cloud\_exadata\_infrastructure\_id](#input\_cloud\_exadata\_infrastructure\_id)
+
+Description: The cloud Exadata infrastructure ID.
+
+Type: `string`
+
+### <a name="input_cluster_name"></a> [cluster\_name](#input\_cluster\_name)
+
+Description: The name of the the VM Cluster.
+
+Type: `string`
+
+### <a name="input_cpu_core_count"></a> [cpu\_core\_count](#input\_cpu\_core\_count)
+
+Description: The CPU core count of the cluster.
+
+Type: `number`
+
+### <a name="input_data_storage_size_in_tbs"></a> [data\_storage\_size\_in\_tbs](#input\_data\_storage\_size\_in\_tbs)
+
+Description: The data storage size in TBs.
+
+Type: `number`
+
+### <a name="input_db_servers"></a> [db\_servers](#input\_db\_servers)
+
+Description: n/a
+
+Type: `list(string)`
+
+### <a name="input_dbnode_storage_size_in_gbs"></a> [dbnode\_storage\_size\_in\_gbs](#input\_dbnode\_storage\_size\_in\_gbs)
+
+Description: The DB node storage size in GBs.
+
+Type: `number`
+
+### <a name="input_display_name"></a> [display\_name](#input\_display\_name)
+
+Description: The display name of the cluster.
+
+Type: `string`
+
+### <a name="input_hostname"></a> [hostname](#input\_hostname)
+
+Description: The hostname of the cluster.
+
+Type: `string`
+
 ### <a name="input_location"></a> [location](#input\_location)
 
 Description: Azure region where the resource should be deployed.
 
 Type: `string`
 
-### <a name="input_name"></a> [name](#input\_name)
+### <a name="input_memory_size_in_gbs"></a> [memory\_size\_in\_gbs](#input\_memory\_size\_in\_gbs)
 
-Description: The name of the this resource.
+Description: The memory size in GBs.
+
+Type: `number`
+
+### <a name="input_resource_group_id"></a> [resource\_group\_id](#input\_resource\_group\_id)
+
+Description: The resource group ID where the resources will be deployed.
 
 Type: `string`
 
-### <a name="input_resource_group_name"></a> [resource\_group\_name](#input\_resource\_group\_name)
+### <a name="input_ssh_public_keys"></a> [ssh\_public\_keys](#input\_ssh\_public\_keys)
 
-Description: The resource group where the resources will be deployed.
+Description: The SSH public keys of the cluster.
+
+Type: `string`
+
+### <a name="input_subnet_id"></a> [subnet\_id](#input\_subnet\_id)
+
+Description: The subnet ID.
+
+Type: `string`
+
+### <a name="input_vnet_id"></a> [vnet\_id](#input\_vnet\_id)
+
+Description: The VNet ID.
 
 Type: `string`
 
@@ -104,6 +166,14 @@ object({
 ```
 
 Default: `null`
+
+### <a name="input_data_storage_percentage"></a> [data\_storage\_percentage](#input\_data\_storage\_percentage)
+
+Description: The data storage percentage of the cluster.
+
+Type: `number`
+
+Default: `100`
 
 ### <a name="input_diagnostic_settings"></a> [diagnostic\_settings](#input\_diagnostic\_settings)
 
@@ -139,6 +209,14 @@ map(object({
 
 Default: `{}`
 
+### <a name="input_domain"></a> [domain](#input\_domain)
+
+Description: The domain of the cluster.
+
+Type: `string`
+
+Default: `null`
+
 ### <a name="input_enable_telemetry"></a> [enable\_telemetry](#input\_enable\_telemetry)
 
 Description: This variable controls whether or not telemetry is enabled for the module.  
@@ -148,6 +226,62 @@ If it is set to false, then no telemetry will be collected.
 Type: `bool`
 
 Default: `true`
+
+### <a name="input_gi_version"></a> [gi\_version](#input\_gi\_version)
+
+Description: The GI version of the cluster.
+
+Type: `string`
+
+Default: `"19.0.0.0"`
+
+### <a name="input_is_diagnostic_events_enabled"></a> [is\_diagnostic\_events\_enabled](#input\_is\_diagnostic\_events\_enabled)
+
+Description: The diagnostic events enabled status of the cluster.
+
+Type: `bool`
+
+Default: `false`
+
+### <a name="input_is_health_monitoring_enabled"></a> [is\_health\_monitoring\_enabled](#input\_is\_health\_monitoring\_enabled)
+
+Description: The health monitoring enabled status of the cluster.
+
+Type: `bool`
+
+Default: `false`
+
+### <a name="input_is_incident_logs_enabled"></a> [is\_incident\_logs\_enabled](#input\_is\_incident\_logs\_enabled)
+
+Description: The incident logs enabled status of the cluster.
+
+Type: `bool`
+
+Default: `false`
+
+### <a name="input_is_local_backup_enabled"></a> [is\_local\_backup\_enabled](#input\_is\_local\_backup\_enabled)
+
+Description: The local backup enabled status of the cluster.
+
+Type: `bool`
+
+Default: `false`
+
+### <a name="input_is_sparse_diskgroup_enabled"></a> [is\_sparse\_diskgroup\_enabled](#input\_is\_sparse\_diskgroup\_enabled)
+
+Description: The sparse diskgroup enabled status of the cluster.
+
+Type: `bool`
+
+Default: `false`
+
+### <a name="input_license_model"></a> [license\_model](#input\_license\_model)
+
+Description: The license model of the cluster.
+
+Type: `string`
+
+Default: `"LicenseIncluded"`
 
 ### <a name="input_lock"></a> [lock](#input\_lock)
 
@@ -184,6 +318,24 @@ object({
 ```
 
 Default: `{}`
+
+### <a name="input_nsg_cidrs"></a> [nsg\_cidrs](#input\_nsg\_cidrs)
+
+Description: A set of NSG CIDRs of the cluster.
+
+Type:
+
+```hcl
+set(object({
+    source = string
+    destination_port_range = optional(set(object({
+      min = string
+      max = string
+    })), null)
+  }))
+```
+
+Default: `null`
 
 ### <a name="input_private_endpoints"></a> [private\_endpoints](#input\_private\_endpoints)
 
@@ -286,17 +438,25 @@ Type: `map(string)`
 
 Default: `null`
 
+### <a name="input_time_zone"></a> [time\_zone](#input\_time\_zone)
+
+Description: The time zone of the cluster.
+
+Type: `string`
+
+Default: `"UTC"`
+
 ## Outputs
 
 The following outputs are exported:
 
-### <a name="output_private_endpoints"></a> [private\_endpoints](#output\_private\_endpoints)
-
-Description:   A map of the private endpoints created.
-
 ### <a name="output_resource"></a> [resource](#output\_resource)
 
 Description: This is the full output for the resource.
+
+### <a name="output_resource_id"></a> [resource\_id](#output\_resource\_id)
+
+Description: n/a
 
 ## Modules
 

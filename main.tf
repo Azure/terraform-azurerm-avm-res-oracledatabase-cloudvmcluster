@@ -1,29 +1,54 @@
-# TODO: Replace this dummy resource azurerm_resource_group.TODO with your module resource
-resource "azurerm_resource_group" "TODO" {
-  location = var.location
-  name     = var.name # calling code must supply the name
-  tags     = var.tags
-}
+//-------------VMCluster resources ------------
+// OperationId: CloudVmClusters_CreateOrUpdate, CloudVmClusters_Get, CloudVmClusters_Delete
+// PUT GET DELETE /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Oracle.Database/cloudVmClusters/{cloudvmclustername}
+resource "azapi_resource" "odaa_vm_cluster" {
+  type = "Oracle.Database/cloudVmClusters@2023-09-01"
+  body = {
+    "location" : var.location,
+    "properties" : {
+      "dataStorageSizeInTbs" : var.data_storage_size_in_tbs,
+      "dbNodeStorageSizeInGbs" : var.dbnode_storage_size_in_gbs,
+      "memorySizeInGbs" : var.memory_size_in_gbs,
+      "timeZone" : var.time_zone,
+      "hostname" : var.hostname,
+      "domain" : var.domain,
+      "cpuCoreCount" : var.cpu_core_count,
+      #"ocpuCount" : 3,
+      "clusterName" : var.cluster_name,
+      "dataStoragePercentage" : var.data_storage_percentage,
+      "isLocalBackupEnabled" : var.is_local_backup_enabled,
+      "cloudExadataInfrastructureId" : var.cloud_exadata_infrastructure_id,
+      "isSparseDiskgroupEnabled" : var.is_sparse_diskgroup_enabled,
+      "sshPublicKeys" : var.ssh_public_keys,
+      "licenseModel" : var.license_model,
+      "vnetId" : var.vnet_id,
+      "giVersion" : var.gi_version,
+      "subnetId" : var.subnet_id,
+      "backupSubnetCidr" : var.backup_subnet_cidr,
+      "nsgCidrs" : var.nsg_cidrs,
+      "dataCollectionOptions" : {
+        "isDiagnosticsEventsEnabled" : var.is_diagnostic_events_enabled,
+        "isHealthMonitoringEnabled" : var.is_health_monitoring_enabled,
+        "isIncidentLogsEnabled" : var.is_incident_logs_enabled
+      },
+      "displayName" : var.display_name,
+      "dbServers" : var.db_servers
+    }
 
-# required AVM resources interfaces
-resource "azurerm_management_lock" "this" {
-  count = var.lock != null ? 1 : 0
+  }
+  name                      = var.cluster_name
+  parent_id                 = var.resource_group_id
+  response_export_values    = ["properties.ocid"]
+  schema_validation_enabled = false
 
-  lock_level = var.lock.kind
-  name       = coalesce(var.lock.name, "lock-${var.lock.kind}")
-  scope      = azurerm_MY_RESOURCE.this.id # TODO: Replace with your azurerm resource name
-  notes      = var.lock.kind == "CanNotDelete" ? "Cannot delete the resource or its child resources." : "Cannot delete or modify the resource or its child resources."
-}
+  timeouts {
+    create = "6h30m"
+    delete = "1h"
+  }
 
-resource "azurerm_role_assignment" "this" {
-  for_each = var.role_assignments
-
-  principal_id                           = each.value.principal_id
-  scope                                  = azurerm_resource_group.TODO.id # TODO: Replace this dummy resource azurerm_resource_group.TODO with your module resource
-  condition                              = each.value.condition
-  condition_version                      = each.value.condition_version
-  delegated_managed_identity_resource_id = each.value.delegated_managed_identity_resource_id
-  role_definition_id                     = strcontains(lower(each.value.role_definition_id_or_name), lower(local.role_definition_resource_substring)) ? each.value.role_definition_id_or_name : null
-  role_definition_name                   = strcontains(lower(each.value.role_definition_id_or_name), lower(local.role_definition_resource_substring)) ? null : each.value.role_definition_id_or_name
-  skip_service_principal_aad_check       = each.value.skip_service_principal_aad_check
+  lifecycle {
+    ignore_changes = [
+      body.properties.giVersion, body.properties.hostname
+    ]
+  }
 }

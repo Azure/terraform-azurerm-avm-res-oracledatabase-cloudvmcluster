@@ -1,25 +1,88 @@
+variable "backup_subnet_cidr" {
+  type        = string
+  description = "The backup subnet CIDR of the cluster."
+
+  validation {
+    condition     = can(regex("^(\\d+\\.){3}\\d+\\/\\d+$", var.backup_subnet_cidr))
+    error_message = "The backup subnet CIDR must be in the format 'XXX.XXX.XXX.XXX/XX'."
+  }
+}
+
+variable "cloud_exadata_infrastructure_id" {
+  type        = string
+  description = "The cloud Exadata infrastructure ID."
+}
+
+variable "cluster_name" {
+  type        = string
+  description = "The name of the the VM Cluster."
+
+  validation {
+    condition     = can(regex("^[a-z0-9-]{3,11}$", var.cluster_name))
+    error_message = "The name must be between 3 and 11 characters long and can only contain lowercase letters, numbers and hyphens."
+  }
+}
+
+variable "cpu_core_count" {
+  type        = number
+  description = "The CPU core count of the cluster."
+}
+
+variable "data_storage_size_in_tbs" {
+  type        = number
+  description = "The data storage size in TBs."
+}
+
+variable "db_servers" {
+  type = list(string)
+}
+
+variable "dbnode_storage_size_in_gbs" {
+  type        = number
+  description = "The DB node storage size in GBs."
+}
+
+variable "display_name" {
+  type        = string
+  description = "The display name of the cluster."
+}
+
+variable "hostname" {
+  type        = string
+  description = "The hostname of the cluster."
+}
+
 variable "location" {
   type        = string
   description = "Azure region where the resource should be deployed."
   nullable    = false
 }
 
-variable "name" {
-  type        = string
-  description = "The name of the this resource."
-
-  validation {
-    condition     = can(regex("TODO", var.name))
-    error_message = "The name must be TODO." # TODO remove the example below once complete:
-    #condition     = can(regex("^[a-z0-9]{5,50}$", var.name))
-    #error_message = "The name must be between 5 and 50 characters long and can only contain lowercase letters and numbers."
-  }
+#Is this the total memory size of the cluster or the amount of memory per VM?
+variable "memory_size_in_gbs" {
+  type        = number
+  description = "The memory size in GBs."
 }
 
-# This is required for most resource modules
-variable "resource_group_name" {
+variable "resource_group_id" {
   type        = string
-  description = "The resource group where the resources will be deployed."
+  description = "The resource group ID where the resources will be deployed."
+  nullable    = false
+}
+
+variable "ssh_public_keys" {
+  type        = string
+  description = "The SSH public keys of the cluster."
+}
+
+variable "subnet_id" {
+  type        = string
+  description = "The subnet ID."
+}
+
+variable "vnet_id" {
+  type        = string
+  description = "The VNet ID."
 }
 
 # required AVM interfaces
@@ -43,6 +106,17 @@ A map describing customer-managed keys to associate with the resource. This incl
 - `user_assigned_identity` - (Optional) An object representing a user-assigned identity with the following properties:
   - `resource_id` - The resource ID of the user-assigned identity.
 DESCRIPTION  
+}
+
+variable "data_storage_percentage" {
+  type        = number
+  default     = 100
+  description = "The data storage percentage of the cluster."
+
+  validation {
+    condition     = var.data_storage_percentage >= 0 && var.data_storage_percentage <= 100
+    error_message = "The percentage must be a number between 0 and 100."
+  }
 }
 
 variable "diagnostic_settings" {
@@ -90,6 +164,12 @@ DESCRIPTION
   }
 }
 
+variable "domain" {
+  type        = string
+  default     = null
+  description = "The domain of the cluster."
+}
+
 variable "enable_telemetry" {
   type        = bool
   default     = true
@@ -99,6 +179,58 @@ For more information see <https://aka.ms/avm/telemetryinfo>.
 If it is set to false, then no telemetry will be collected.
 DESCRIPTION
   nullable    = false
+}
+
+variable "gi_version" {
+  type        = string
+  default     = "19.0.0.0"
+  description = "The GI version of the cluster."
+
+  validation {
+    condition     = can(regex("^(\\d+\\.){2}\\d+\\.\\d+$", var.gi_version))
+    error_message = "The GI version must be in the format 'XX.XX.XX.XX'."
+  }
+}
+
+variable "is_diagnostic_events_enabled" {
+  type        = bool
+  default     = false
+  description = "The diagnostic events enabled status of the cluster."
+}
+
+variable "is_health_monitoring_enabled" {
+  type        = bool
+  default     = false
+  description = "The health monitoring enabled status of the cluster."
+}
+
+variable "is_incident_logs_enabled" {
+  type        = bool
+  default     = false
+  description = "The incident logs enabled status of the cluster."
+}
+
+variable "is_local_backup_enabled" {
+  type        = bool
+  default     = false
+  description = "The local backup enabled status of the cluster."
+}
+
+variable "is_sparse_diskgroup_enabled" {
+  type        = bool
+  default     = false
+  description = "The sparse diskgroup enabled status of the cluster."
+}
+
+variable "license_model" {
+  type        = string
+  default     = "LicenseIncluded"
+  description = "The license model of the cluster."
+
+  validation {
+    condition     = var.license_model == "LicenseIncluded" || var.license_model == "BringYourOwnLicense"
+    error_message = "The license model must be either 'LicenseIncluded' or 'BringYourOwnLicense'."
+  }
 }
 
 variable "lock" {
@@ -134,6 +266,18 @@ Controls the Managed Identity configuration on this resource. The following prop
 - `user_assigned_resource_ids` - (Optional) Specifies a list of User Assigned Managed Identity resource IDs to be assigned to this resource.
 DESCRIPTION
   nullable    = false
+}
+
+variable "nsg_cidrs" {
+  type = set(object({
+    source = string
+    destination_port_range = optional(set(object({
+      min = string
+      max = string
+    })), null)
+  }))
+  default     = null
+  description = "A set of NSG CIDRs of the cluster."
 }
 
 variable "private_endpoints" {
@@ -231,4 +375,10 @@ variable "tags" {
   type        = map(string)
   default     = null
   description = "(Optional) Tags of the resource."
+}
+
+variable "time_zone" {
+  type        = string
+  default     = "UTC"
+  description = "The time zone of the cluster."
 }

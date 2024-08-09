@@ -111,7 +111,7 @@ module "test_default" {
   cloud_exadata_infrastructure_id = module.avm_odaa_infra.resource_id
   vnet_id                         = module.odaa_vnet.resource_id
   subnet_id                       = module.odaa_vnet.subnets.snet-odaa.resource_id
-  ssh_public_keys                 = tls_private_key.generated_ssh_key.public_key_openssh
+  ssh_public_keys                 = ["${tls_private_key.generated_ssh_key.public_key_openssh}"]
   db_servers = [
     jsondecode(data.azapi_resource_list.listDbServersByPrimaryCloudExadataInfrastructure
     .output).value[0].properties.ocid,

@@ -71,7 +71,7 @@ variable "resource_group_id" {
 }
 
 variable "ssh_public_keys" {
-  type        = string
+  type        = list(string)
   description = "The SSH public keys of the cluster."
 }
 

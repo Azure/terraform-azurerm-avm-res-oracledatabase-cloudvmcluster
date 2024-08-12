@@ -37,16 +37,6 @@ resource "azurerm_resource_group" "this" {
 }
 
 locals {
-  diagnostic_settings = {
-    sentToLogAnalytics = {
-      name                           = "sendToLogAnalytics"
-      workspace_resource_id          = azurerm_log_analytics_workspace.this.id
-      log_analytics_destination_type = "Dedicated"
-      metric_categories              = ["AllMetrics"]
-      log_groups                     = ["AllLogs"]
-
-    }
-  }
   enable_telemetry = true
   location         = "eastus"
   tags = {
@@ -54,7 +44,6 @@ locals {
     project          = "Oracle Database @ Azure"
     createdby        = "ODAA Infra - AVM Module"
     delete           = "yes"
-    deploy_timestamp = timestamp()
   }
   zone = "3"
 }
@@ -65,12 +54,6 @@ resource "random_string" "suffix" {
   upper   = false
 }
 
-#Log Analytics Workspace for Diagnostic Settings
-resource "azurerm_log_analytics_workspace" "this" {
-  location            = azurerm_resource_group.this.location
-  name                = module.naming.log_analytics_workspace.name_unique
-  resource_group_name = azurerm_resource_group.this.name
-}
 
 
 module "avm_odaa_infra" {
@@ -126,17 +109,17 @@ module "test_default" {
   data_storage_size_in_tbs     = 2
   dbnode_storage_size_in_gbs   = 120
   time_zone                    = "UTC"
-  memory_size_in_gbs           = 1000
+  memory_size_in_gbs           = 60
   hostname                     = "hostname-${random_string.suffix.result}"
-  cpu_core_count               = 4
+  cpu_core_count               = 2
   data_storage_percentage      = 80
   is_local_backup_enabled      = false
   is_sparse_diskgroup_enabled  = false
   license_model                = "LicenseIncluded"
   gi_version                   = "19.0.0.0"
-  is_diagnostic_events_enabled = false
-  is_health_monitoring_enabled = false
-  is_incident_logs_enabled     = false
+  is_diagnostic_events_enabled = true
+  is_health_monitoring_enabled = true
+  is_incident_logs_enabled     = true
 
   tags             = local.tags
   enable_telemetry = var.enable_telemetry

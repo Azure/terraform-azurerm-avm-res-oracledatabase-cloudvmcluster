@@ -24,6 +24,5 @@ module "odaa_vnet" {
 
   #interfaces
   tags                = local.tags
-  diagnostic_settings = local.diagnostic_settings
   resource_group_name = azurerm_resource_group.this.name
 }

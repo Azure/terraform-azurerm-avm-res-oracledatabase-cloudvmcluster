@@ -40,10 +40,10 @@ locals {
   enable_telemetry = true
   location         = "eastus"
   tags = {
-    scenario         = "Default"
-    project          = "Oracle Database @ Azure"
-    createdby        = "ODAA Infra - AVM Module"
-    delete           = "yes"
+    scenario  = "Default"
+    project   = "Oracle Database @ Azure"
+    createdby = "ODAA Infra - AVM Module"
+    delete    = "yes"
   }
   zone = "3"
 }
@@ -57,6 +57,7 @@ resource "random_string" "suffix" {
 
 
 module "avm_odaa_infra" {
+  #source = "Azure/avm-res-oracledatabase-cloudexadatainfrastructure/azurerm"
   source = "../../../avm-odaa-infra/"
 
   location                             = local.location
@@ -76,12 +77,6 @@ module "avm_odaa_infra" {
 }
 
 
-
-data "azapi_resource_list" "listDbServersByPrimaryCloudExadataInfrastructure" {
-  parent_id              = module.avm_odaa_infra.resource_id
-  type                   = "Oracle.Database/cloudExadataInfrastructures/dbServers@2023-09-01"
-  response_export_values = ["*"]
-}
 # This is the module call
 # Do not specify location here due to the randomization above.
 # Leaving location as `null` will cause the module to use the resource group location
@@ -95,13 +90,6 @@ module "test_default" {
   vnet_id                         = module.odaa_vnet.resource_id
   subnet_id                       = module.odaa_vnet.subnets.snet-odaa.resource_id
   ssh_public_keys                 = ["${tls_private_key.generated_ssh_key.public_key_openssh}"]
-  db_servers = [
-    jsondecode(data.azapi_resource_list.listDbServersByPrimaryCloudExadataInfrastructure
-    .output).value[0].properties.ocid,
-    jsondecode(data.azapi_resource_list.listDbServersByPrimaryCloudExadataInfrastructure
-    .output).value[1].properties.ocid
-  ]
-
 
   backup_subnet_cidr           = "172.17.5.0/24"
   cluster_name                 = "odaa-vmcl"

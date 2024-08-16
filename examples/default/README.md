@@ -43,24 +43,13 @@ resource "azurerm_resource_group" "this" {
 }
 
 locals {
-  diagnostic_settings = {
-    sentToLogAnalytics = {
-      name                           = "sendToLogAnalytics"
-      workspace_resource_id          = azurerm_log_analytics_workspace.this.id
-      log_analytics_destination_type = "Dedicated"
-      metric_categories              = ["AllMetrics"]
-      log_groups                     = ["AllLogs"]
-
-    }
-  }
   enable_telemetry = true
   location         = "eastus"
   tags = {
-    scenario         = "Default"
-    project          = "Oracle Database @ Azure"
-    createdby        = "ODAA Infra - AVM Module"
-    delete           = "yes"
-    deploy_timestamp = timestamp()
+    scenario  = "Default"
+    project   = "Oracle Database @ Azure"
+    createdby = "ODAA Infra - AVM Module"
+    delete    = "yes"
   }
   zone = "3"
 }
@@ -71,15 +60,10 @@ resource "random_string" "suffix" {
   upper   = false
 }
 
-#Log Analytics Workspace for Diagnostic Settings
-resource "azurerm_log_analytics_workspace" "this" {
-  location            = azurerm_resource_group.this.location
-  name                = module.naming.log_analytics_workspace.name_unique
-  resource_group_name = azurerm_resource_group.this.name
-}
 
 
 module "avm_odaa_infra" {
+  #source = "Azure/avm-res-oracledatabase-cloudexadatainfrastructure/azurerm"
   source = "../../../avm-odaa-infra/"
 
   location                             = local.location
@@ -99,12 +83,6 @@ module "avm_odaa_infra" {
 }
 
 
-
-data "azapi_resource_list" "listDbServersByPrimaryCloudExadataInfrastructure" {
-  parent_id              = module.avm_odaa_infra.resource_id
-  type                   = "Oracle.Database/cloudExadataInfrastructures/dbServers@2023-09-01"
-  response_export_values = ["*"]
-}
 # This is the module call
 # Do not specify location here due to the randomization above.
 # Leaving location as `null` will cause the module to use the resource group location
@@ -117,14 +95,7 @@ module "test_default" {
   cloud_exadata_infrastructure_id = module.avm_odaa_infra.resource_id
   vnet_id                         = module.odaa_vnet.resource_id
   subnet_id                       = module.odaa_vnet.subnets.snet-odaa.resource_id
-  ssh_public_keys                 = tls_private_key.generated_ssh_key.public_key_openssh
-  db_servers = [
-    jsondecode(data.azapi_resource_list.listDbServersByPrimaryCloudExadataInfrastructure
-    .output).value[0].properties.ocid,
-    jsondecode(data.azapi_resource_list.listDbServersByPrimaryCloudExadataInfrastructure
-    .output).value[1].properties.ocid
-  ]
-
+  ssh_public_keys                 = ["${tls_private_key.generated_ssh_key.public_key_openssh}"]
 
   backup_subnet_cidr           = "172.17.5.0/24"
   cluster_name                 = "odaa-vmcl"
@@ -132,17 +103,17 @@ module "test_default" {
   data_storage_size_in_tbs     = 2
   dbnode_storage_size_in_gbs   = 120
   time_zone                    = "UTC"
-  memory_size_in_gbs           = 1000
+  memory_size_in_gbs           = 60
   hostname                     = "hostname-${random_string.suffix.result}"
-  cpu_core_count               = 4
+  cpu_core_count               = 2
   data_storage_percentage      = 80
   is_local_backup_enabled      = false
   is_sparse_diskgroup_enabled  = false
   license_model                = "LicenseIncluded"
   gi_version                   = "19.0.0.0"
-  is_diagnostic_events_enabled = false
-  is_health_monitoring_enabled = false
-  is_incident_logs_enabled     = false
+  is_diagnostic_events_enabled = true
+  is_health_monitoring_enabled = true
+  is_incident_logs_enabled     = true
 
   tags             = local.tags
   enable_telemetry = var.enable_telemetry
@@ -167,12 +138,10 @@ The following requirements are needed by this module:
 The following resources are used by this module:
 
 - [azapi_resource.ssh_public_key](https://registry.terraform.io/providers/azure/azapi/latest/docs/resources/resource) (resource)
-- [azurerm_log_analytics_workspace.this](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/log_analytics_workspace) (resource)
 - [azurerm_resource_group.this](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/resource_group) (resource)
 - [local_file.private_key](https://registry.terraform.io/providers/hashicorp/local/latest/docs/resources/file) (resource)
 - [random_string.suffix](https://registry.terraform.io/providers/hashicorp/random/latest/docs/resources/string) (resource)
 - [tls_private_key.generated_ssh_key](https://registry.terraform.io/providers/hashicorp/tls/latest/docs/resources/private_key) (resource)
-- [azapi_resource_list.listDbServersByPrimaryCloudExadataInfrastructure](https://registry.terraform.io/providers/azure/azapi/latest/docs/data-sources/resource_list) (data source)
 
 <!-- markdownlint-disable MD013 -->
 ## Required Inputs

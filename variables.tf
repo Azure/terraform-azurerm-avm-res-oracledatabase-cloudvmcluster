@@ -33,10 +33,6 @@ variable "data_storage_size_in_tbs" {
   description = "The data storage size in TBs."
 }
 
-variable "db_servers" {
-  type = list(string)
-}
-
 variable "dbnode_storage_size_in_gbs" {
   type        = number
   description = "The DB node storage size in GBs."
@@ -117,6 +113,11 @@ variable "data_storage_percentage" {
     condition     = var.data_storage_percentage >= 0 && var.data_storage_percentage <= 100
     error_message = "The percentage must be a number between 0 and 100."
   }
+}
+
+variable "db_servers" {
+  type    = list(string)
+  default = []
 }
 
 variable "diagnostic_settings" {

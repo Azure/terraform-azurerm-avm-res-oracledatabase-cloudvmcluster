@@ -1,5 +1,9 @@
 # TODO: insert locals here.
 locals {
+  db_servers_ocids = length(var.db_servers) == 0 ? local.exa_infra_dbServers_ocids : var.db_servers
+  #Reads the default DBservers from the Exadata Infrastructure to be used in the VMCluster creation
+  exa_infra_dbServers       = jsondecode(data.azapi_resource_list.listDbServersByCloudExadataInfrastructure.output).value[*]
+  exa_infra_dbServers_ocids = toset([for dbs in local.exa_infra_dbServers : "${dbs.properties.ocid}"])
   managed_identities = {
     system_assigned_user_assigned = (var.managed_identities.system_assigned || length(var.managed_identities.user_assigned_resource_ids) > 0) ? {
       this = {

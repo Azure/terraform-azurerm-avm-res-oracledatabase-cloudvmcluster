@@ -41,6 +41,7 @@ The following resources are used by this module:
 - [azapi_resource.odaa_vm_cluster](https://registry.terraform.io/providers/azure/azapi/latest/docs/resources/resource) (resource)
 - [modtm_telemetry.telemetry](https://registry.terraform.io/providers/azure/modtm/latest/docs/resources/telemetry) (resource)
 - [random_uuid.telemetry](https://registry.terraform.io/providers/hashicorp/random/latest/docs/resources/uuid) (resource)
+- [azapi_resource_list.listDbServersByCloudExadataInfrastructure](https://registry.terraform.io/providers/azure/azapi/latest/docs/data-sources/resource_list) (data source)
 - [azurerm_client_config.telemetry](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/data-sources/client_config) (data source)
 - [modtm_module_source.telemetry](https://registry.terraform.io/providers/azure/modtm/latest/docs/data-sources/module_source) (data source)
 
@@ -78,12 +79,6 @@ Type: `number`
 Description: The data storage size in TBs.
 
 Type: `number`
-
-### <a name="input_db_servers"></a> [db\_servers](#input\_db\_servers)
-
-Description: n/a
-
-Type: `list(string)`
 
 ### <a name="input_dbnode_storage_size_in_gbs"></a> [dbnode\_storage\_size\_in\_gbs](#input\_dbnode\_storage\_size\_in\_gbs)
 
@@ -125,7 +120,7 @@ Type: `string`
 
 Description: The SSH public keys of the cluster.
 
-Type: `string`
+Type: `list(string)`
 
 ### <a name="input_subnet_id"></a> [subnet\_id](#input\_subnet\_id)
 
@@ -174,6 +169,14 @@ Description: The data storage percentage of the cluster.
 Type: `number`
 
 Default: `100`
+
+### <a name="input_db_servers"></a> [db\_servers](#input\_db\_servers)
+
+Description: n/a
+
+Type: `list(string)`
+
+Default: `[]`
 
 ### <a name="input_diagnostic_settings"></a> [diagnostic\_settings](#input\_diagnostic\_settings)
 

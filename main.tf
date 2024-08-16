@@ -32,7 +32,7 @@ resource "azapi_resource" "odaa_vm_cluster" {
         "isIncidentLogsEnabled" : var.is_incident_logs_enabled
       },
       "displayName" : var.display_name,
-      "dbServers" : var.db_servers
+      "dbServers" : local.db_servers_ocids
     }
 
   }

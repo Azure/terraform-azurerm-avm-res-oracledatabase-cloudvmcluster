@@ -6,5 +6,5 @@ output "resource" {
 }
 
 output "resource_id" {
-  value = azapi_resource.odaa_vm_cluster.output.properties.ocid
+  value = azapi_resource.odaa_vm_cluster.id
 }

@@ -99,7 +99,7 @@ module "test_default" {
   time_zone                    = "UTC"
   memory_size_in_gbs           = 60
   hostname                     = "hostname-${random_string.suffix.result}"
-  cpu_core_count               = 2
+  cpu_core_count               = 4
   data_storage_percentage      = 80
   is_local_backup_enabled      = false
   is_sparse_diskgroup_enabled  = false

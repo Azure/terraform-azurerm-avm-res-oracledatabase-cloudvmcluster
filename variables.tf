@@ -26,6 +26,11 @@ variable "cluster_name" {
 variable "cpu_core_count" {
   type        = number
   description = "The CPU core count of the cluster."
+
+  validation {
+    condition     = var.cpu_core_count >= 4
+    error_message = "The CPU core count must be greater or equal than 4."
+  }
 }
 
 variable "data_storage_size_in_tbs" {

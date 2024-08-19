@@ -38,7 +38,6 @@ resource "azapi_resource" "odaa_vm_cluster" {
   }
   name                      = var.cluster_name
   parent_id                 = var.resource_group_id
-  response_export_values    = ["properties.ocid"]
   schema_validation_enabled = false
 
   timeouts {

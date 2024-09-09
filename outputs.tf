@@ -6,5 +6,6 @@ output "resource" {
 }
 
 output "resource_id" {
-  value = azapi_resource.odaa_vm_cluster.id
+  description = "Resource ID of the ODAA VM Cluster"
+  value       = azapi_resource.odaa_vm_cluster.id
 }

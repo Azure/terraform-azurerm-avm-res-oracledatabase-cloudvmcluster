@@ -7,17 +7,25 @@ This deploys the module in its simplest form.
 terraform {
   required_version = ">= 1.9.2"
   required_providers {
-    azapi = {
-      source  = "azure/azapi"
-      version = "~> 1.14.0"
-    }
     azurerm = {
       source  = "hashicorp/azurerm"
       version = "~> 3.74"
     }
+    azapi = {
+      source  = "azure/azapi"
+      version = "~> 1.14.0"
+    }
     random = {
       source  = "hashicorp/random"
       version = "~> 3.5"
+    }
+    tls = {
+      source  = "hashicorp/tls"
+      version = "4.0.5"
+    }
+    local = {
+      source  = "hashicorp/local"
+      version = "2.5.1"
     }
   }
 }
@@ -63,8 +71,8 @@ resource "random_string" "suffix" {
 
 
 module "avm_odaa_infra" {
-  #source = "Azure/avm-res-oracledatabase-cloudexadatainfrastructure/azurerm"
-  source = "../../../avm-odaa-infra/"
+  source  = "Azure/avm-res-oracledatabase-cloudexadatainfrastructure/azurerm"
+  version = "0.1.0"
 
   location                             = local.location
   name                                 = "odaa-infra-${random_string.suffix.result}"
@@ -95,7 +103,7 @@ module "test_default" {
   cloud_exadata_infrastructure_id = module.avm_odaa_infra.resource_id
   vnet_id                         = module.odaa_vnet.resource_id
   subnet_id                       = module.odaa_vnet.subnets.snet-odaa.resource_id
-  ssh_public_keys                 = ["${tls_private_key.generated_ssh_key.public_key_openssh}"]
+  ssh_public_keys                 = [tls_private_key.generated_ssh_key.public_key_openssh]
 
   backup_subnet_cidr           = "172.17.5.0/24"
   cluster_name                 = "odaa-vmcl"
@@ -131,7 +139,11 @@ The following requirements are needed by this module:
 
 - <a name="requirement_azurerm"></a> [azurerm](#requirement\_azurerm) (~> 3.74)
 
+- <a name="requirement_local"></a> [local](#requirement\_local) (2.5.1)
+
 - <a name="requirement_random"></a> [random](#requirement\_random) (~> 3.5)
+
+- <a name="requirement_tls"></a> [tls](#requirement\_tls) (4.0.5)
 
 ## Resources
 
@@ -139,9 +151,9 @@ The following resources are used by this module:
 
 - [azapi_resource.ssh_public_key](https://registry.terraform.io/providers/azure/azapi/latest/docs/resources/resource) (resource)
 - [azurerm_resource_group.this](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/resource_group) (resource)
-- [local_file.private_key](https://registry.terraform.io/providers/hashicorp/local/latest/docs/resources/file) (resource)
+- [local_file.private_key](https://registry.terraform.io/providers/hashicorp/local/2.5.1/docs/resources/file) (resource)
 - [random_string.suffix](https://registry.terraform.io/providers/hashicorp/random/latest/docs/resources/string) (resource)
-- [tls_private_key.generated_ssh_key](https://registry.terraform.io/providers/hashicorp/tls/latest/docs/resources/private_key) (resource)
+- [tls_private_key.generated_ssh_key](https://registry.terraform.io/providers/hashicorp/tls/4.0.5/docs/resources/private_key) (resource)
 
 <!-- markdownlint-disable MD013 -->
 ## Required Inputs
@@ -172,9 +184,9 @@ The following Modules are called:
 
 ### <a name="module_avm_odaa_infra"></a> [avm\_odaa\_infra](#module\_avm\_odaa\_infra)
 
-Source: ../../../avm-odaa-infra/
+Source: Azure/avm-res-oracledatabase-cloudexadatainfrastructure/azurerm
 
-Version:
+Version: 0.1.0
 
 ### <a name="module_naming"></a> [naming](#module\_naming)
 

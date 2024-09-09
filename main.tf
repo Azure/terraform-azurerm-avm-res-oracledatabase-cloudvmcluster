@@ -1,6 +1,6 @@
-//-------------VMCluster resources ------------
-// OperationId: CloudVmClusters_CreateOrUpdate, CloudVmClusters_Get, CloudVmClusters_Delete
-// PUT GET DELETE /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Oracle.Database/cloudVmClusters/{cloudvmclustername}
+#-------------VMCluster resources ------------
+# OperationId: CloudVmClusters_CreateOrUpdate, CloudVmClusters_Get, CloudVmClusters_Delete
+# PUT GET DELETE /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Oracle.Database/cloudVmClusters/{cloudvmclustername}
 resource "azapi_resource" "odaa_vm_cluster" {
   type = "Oracle.Database/cloudVmClusters@2023-09-01"
   body = {

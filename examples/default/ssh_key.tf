@@ -7,7 +7,7 @@ resource "azapi_resource" "ssh_public_key" {
   type = "Microsoft.Compute/sshPublicKeys@2023-09-01"
   body = {
     properties = {
-      publicKey = "${tls_private_key.generated_ssh_key.public_key_openssh}"
+      publicKey = tls_private_key.generated_ssh_key.public_key_openssh
     }
   }
   location  = local.location

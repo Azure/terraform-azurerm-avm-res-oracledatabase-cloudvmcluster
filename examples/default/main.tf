@@ -9,10 +9,19 @@ terraform {
       source  = "hashicorp/azurerm"
       version = "~> 3.74"
     }
+    local = {
+      source  = "hashicorp/local"
+      version = "2.5.1"
+    }
     random = {
       source  = "hashicorp/random"
       version = "~> 3.5"
     }
+    tls = {
+      source  = "hashicorp/tls"
+      version = "4.0.5"
+    }
+
   }
 }
 
@@ -57,8 +66,8 @@ resource "random_string" "suffix" {
 
 
 module "avm_odaa_infra" {
-  #source = "Azure/avm-res-oracledatabase-cloudexadatainfrastructure/azurerm"
-  source = "../../../avm-odaa-infra/"
+  source  = "Azure/avm-res-oracledatabase-cloudexadatainfrastructure/azurerm"
+  version = "0.1.0"
 
   location                             = local.location
   name                                 = "odaa-infra-${random_string.suffix.result}"
@@ -89,7 +98,7 @@ module "test_default" {
   cloud_exadata_infrastructure_id = module.avm_odaa_infra.resource_id
   vnet_id                         = module.odaa_vnet.resource_id
   subnet_id                       = module.odaa_vnet.subnets.snet-odaa.resource_id
-  ssh_public_keys                 = ["${tls_private_key.generated_ssh_key.public_key_openssh}"]
+  ssh_public_keys                 = [tls_private_key.generated_ssh_key.public_key_openssh]
 
   backup_subnet_cidr           = "172.17.5.0/24"
   cluster_name                 = "odaa-vmcl"

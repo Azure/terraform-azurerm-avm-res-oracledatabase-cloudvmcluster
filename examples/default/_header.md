@@ -25,23 +25,23 @@ This deploys the module in its simplest form. The example contains Terraform cod
 
 ```hcl
 module "oracle_db_cluster" {
-  source   = "path_to_module"
-  
+  source = "path_to_module"
+
   resource_group_id               = azurerm_resource_group.this.id
   location                        = "eastus"
   cloud_exadata_infrastructure_id = module.exadata_infra.resource_id
   vnet_id                         = module.odaa_vnet.resource_id
   subnet_id                       = module.odaa_vnet.subnets.snet-odaa.resource_id
   ssh_public_keys                 = [tls_private_key.generated_ssh_key.public_key_openssh]
-  
-  cluster_name                 = "odaa-vmcl"
-  display_name                 = "odaa vm cluster"
-  data_storage_size_in_tbs     = 2
-  dbnode_storage_size_in_gbs   = 120
-  memory_size_in_gbs           = 60
-  cpu_core_count               = 4
-  gi_version                   = "19.0.0.0"
-  
+
+  cluster_name               = "odaa-vmcl"
+  display_name               = "odaa vm cluster"
+  data_storage_size_in_tbs   = 2
+  dbnode_storage_size_in_gbs = 120
+  memory_size_in_gbs         = 60
+  cpu_core_count             = 4
+  gi_version                 = "19.0.0.0"
+
   tags             = local.tags
   enable_telemetry = true
 }
@@ -68,7 +68,7 @@ module "odaa_vnet" {
   version       = "0.4.0"
   name          = "odaa-vnet"
   address_space = ["10.0.0.0/16"]
-  
+
   subnets = {
     snet-odaa = {
       name             = "odaa-snet"
@@ -82,7 +82,7 @@ module "odaa_vnet" {
       }]
     }
   }
-  
+
   resource_group_name = azurerm_resource_group.this.name
 }
 ```
@@ -95,13 +95,13 @@ The module also provisions the Exadata infrastructure and the Oracle VM Cluster:
 module "avm_odaa_infra" {
   source  = "Azure/avm-res-oracledatabase-cloudexadatainfrastructure/azurerm"
   version = "0.1.0"
-  
-  name                                 = "odaa-infra-${random_string.suffix.result}"
-  compute_count                        = 2
-  storage_count                        = 3
-  shape                                = "Exadata.X9M"
-  resource_group_id                    = azurerm_resource_group.this.id
-  location                             = local.location
+
+  name              = "odaa-infra-${random_string.suffix.result}"
+  compute_count     = 2
+  storage_count     = 3
+  shape             = "Exadata.X9M"
+  resource_group_id = azurerm_resource_group.this.id
+  location          = local.location
 }
 ```
 

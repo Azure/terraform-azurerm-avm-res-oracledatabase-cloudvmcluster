@@ -21,17 +21,17 @@ An example of using the module in a Terraform configuration:
 
 ```hcl
 module "oracle_vm_cluster" {
-  source  = "github.com/sihbher/avm-res-oracledatabase-cloudvmcluster"
-  
+  source = "github.com/sihbher/avm-res-oracledatabase-cloudvmcluster"
+
   resource_group_name = "example-resource-group"
   location            = "eastus"
   vm_cluster_name     = "example-vm-cluster"
-  
-  db_version          = "19c"
-  vm_size             = "Standard_D8s_v3"
-  node_count          = 2
-  
-  subnet_id           = "/subscriptions/{subscription_id}/resourceGroups/{resource_group_name}/providers/Microsoft.Network/virtualNetworks/{vnet_name}/subnets/{subnet_name}"
+
+  db_version = "19c"
+  vm_size    = "Standard_D8s_v3"
+  node_count = 2
+
+  subnet_id = "/subscriptions/{subscription_id}/resourceGroups/{resource_group_name}/providers/Microsoft.Network/virtualNetworks/{vnet_name}/subnets/{subnet_name}"
 }
 ```
 

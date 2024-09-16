@@ -7,7 +7,7 @@ terraform {
     }
     azurerm = {
       source  = "hashicorp/azurerm"
-      version = "~> 3.74"
+      version = "~> 3.116.0"
     }
     local = {
       source  = "hashicorp/local"
@@ -21,7 +21,6 @@ terraform {
       source  = "hashicorp/tls"
       version = "4.0.5"
     }
-
   }
 }
 
@@ -31,22 +30,8 @@ provider "azurerm" {
 }
 
 
-# This ensures we have unique CAF compliant names for our resources.
-module "naming" {
-  source  = "Azure/naming/azurerm"
-  version = "~> 0.3"
-}
-
-# This is required for resource modules
-
-resource "azurerm_resource_group" "this" {
-  location = local.location
-  name     = module.naming.resource_group.name_unique
-  tags     = local.tags
-}
-
 locals {
-  enable_telemetry = true
+  enable_telemetry = true #enable_telemetry is a variable that controls whether or not telemetry is enabled for the module.
   location         = "eastus"
   tags = {
     scenario  = "Default"
@@ -57,14 +42,80 @@ locals {
   zone = "3"
 }
 
+
+module "naming" {
+  source  = "Azure/naming/azurerm"
+  version = "~> 0.3"
+}
+
+
+# Create a resource group
+resource "azurerm_resource_group" "this" {
+  location = local.location
+  name     = module.naming.resource_group.name_unique
+  tags     = local.tags
+}
+
+
+# Create a random string for the suffix
 resource "random_string" "suffix" {
   length  = 5
   special = false
   upper   = false
 }
 
+##################### This is the SSH key generation
+resource "tls_private_key" "generated_ssh_key" {
+  algorithm = "RSA"
+  rsa_bits  = 4096
+}
+
+resource "azapi_resource" "ssh_public_key" {
+  type = "Microsoft.Compute/sshPublicKeys@2023-09-01"
+  body = {
+    properties = {
+      publicKey = tls_private_key.generated_ssh_key.public_key_openssh
+    }
+  }
+  location  = local.location
+  name      = "odaa_ssh_key"
+  parent_id = azurerm_resource_group.this.id
+}
+
+# This is the local file resource to store the private key
+resource "local_file" "private_key" {
+  filename = "${path.module}/id_rsa"
+  content  = tls_private_key.generated_ssh_key.private_key_pem
+}
 
 
+##################### This is the VNET creation using the module
+module "odaa_vnet" {
+  source        = "Azure/avm-res-network-virtualnetwork/azurerm"
+  version       = "0.4.0"
+  name          = "odaa-vnet"
+  location      = local.location
+  address_space = ["10.0.0.0/16"]
+
+  subnets = {
+    snet-odaa = {
+      name             = "odaa-snet"
+      address_prefixes = ["10.0.0.0/24"]
+      delegation = [{
+        name = "ODAA"
+        service_delegation = {
+          name    = "Oracle.Database/networkAttachments"
+          actions = ["Microsoft.Network/networkinterfaces/*", "Microsoft.Network/virtualNetworks/subnets/join/action"]
+        }
+
+      }]
+    }
+  }
+  tags                = local.tags
+  resource_group_name = azurerm_resource_group.this.name
+}
+
+##################### This is the ODAA Infrastructure creation using the module
 module "avm_odaa_infra" {
   source  = "Azure/avm-res-oracledatabase-cloudexadatainfrastructure/azurerm"
   version = "0.1.0"
@@ -86,10 +137,7 @@ module "avm_odaa_infra" {
 }
 
 
-# This is the module call
-# Do not specify location here due to the randomization above.
-# Leaving location as `null` will cause the module to use the resource group location
-# with a data source.
+##################### This is the VMCluster creation using the local module
 module "test_default" {
   source   = "../../"
   location = local.location
@@ -119,5 +167,7 @@ module "test_default" {
   is_incident_logs_enabled     = true
 
   tags             = local.tags
-  enable_telemetry = var.enable_telemetry
+  enable_telemetry = local.enable_telemetry
+
+  depends_on = [module.avm_odaa_infra, module.odaa_vnet, azurerm_resource_group.this]
 }

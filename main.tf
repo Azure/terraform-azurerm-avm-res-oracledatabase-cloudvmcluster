@@ -41,8 +41,8 @@ resource "azapi_resource" "odaa_vm_cluster" {
   schema_validation_enabled = false
 
   timeouts {
-    create = "6h30m"
-    delete = "1h"
+    create = "24h"
+    delete = "8h"
   }
 
   lifecycle {

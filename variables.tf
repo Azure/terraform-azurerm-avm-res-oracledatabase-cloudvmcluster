@@ -59,7 +59,6 @@ variable "location" {
   nullable    = false
 }
 
-#Is this the total memory size of the cluster or the amount of memory per VM?
 variable "memory_size_in_gbs" {
   type        = number
   description = "The memory size in GBs."
@@ -280,13 +279,28 @@ DESCRIPTION
 variable "nsg_cidrs" {
   type = set(object({
     source = string
-    destination_port_range = optional(set(object({
+    destination_port_range = object({
       min = string
       max = string
-    })), null)
+    })
   }))
   default     = null
-  description = "A set of NSG CIDRs of the cluster."
+  description = <<DESCRIPTION
+Add additional Network ingress rules for the network security group of the VM cluster:
+
+ - `source` - The source IP address range.
+ - `destination_port_range` - The destination port range. The following properties can be specified:
+   - `min` - The minimum port number.
+   - `max` - The maximum port number.
+ example:
+ nsg_cidrs = [{
+     source = 0.0.0.0/0
+     destination_port_range = {
+         min = "1521"
+         max = "1522"
+       }
+   }]  
+DESCRIPTION
 }
 
 # tflint-ignore: terraform_unused_declarations

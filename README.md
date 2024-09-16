@@ -28,7 +28,7 @@ The following requirements are needed by this module:
 
 - <a name="requirement_azapi"></a> [azapi](#requirement\_azapi) (~> 1.14.0)
 
-- <a name="requirement_azurerm"></a> [azurerm](#requirement\_azurerm) (~> 3.74)
+- <a name="requirement_azurerm"></a> [azurerm](#requirement\_azurerm) (~> 3.116.0)
 
 - <a name="requirement_modtm"></a> [modtm](#requirement\_modtm) (~> 0.3)
 
@@ -324,17 +324,30 @@ Default: `{}`
 
 ### <a name="input_nsg_cidrs"></a> [nsg\_cidrs](#input\_nsg\_cidrs)
 
-Description: A set of NSG CIDRs of the cluster.
+Description: Add additional Network ingress rules for the network security group of the VM cluster:
+
+ - `source` - The source IP address range.
+ - `destination_port_range` - The destination port range. The following properties can be specified:
+   - `min` - The minimum port number.
+   - `max` - The maximum port number.  
+ example:  
+ nsg\_cidrs = [{  
+     source = 0.0.0.0/0  
+     destination\_port\_range = {  
+         min = "1521"  
+         max = "1522"
+       }
+   }]  
 
 Type:
 
 ```hcl
 set(object({
     source = string
-    destination_port_range = optional(set(object({
+    destination_port_range = object({
       min = string
       max = string
-    })), null)
+    })
   }))
 ```
 

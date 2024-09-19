@@ -45,7 +45,9 @@ resource "azapi_resource" "odaa_vm_cluster" {
 
   lifecycle {
     ignore_changes = [
-      body.properties.giVersion, body.properties.hostname
+      body.properties.giVersion,
+      body.properties.hostname,
+      body.properties.sshPublicKeys
     ]
   }
 }

@@ -45,7 +45,6 @@ module "oracle_vm_cluster" {
 | `cpu_core_count`                      | number        | N/A                  | The CPU core count of the cluster. Must be ≥ 4.                                                  |
 | `data_storage_size_in_tbs`            | number        | N/A                  | The data storage size in TBs.                                                                    |
 | `dbnode_storage_size_in_gbs`          | number        | N/A                  | The DB node storage size in GBs.                                                                 |
-| `display_name`                        | string        | N/A                  | The display name of the cluster.                                                                 |
 | `hostname`                            | string        | N/A                  | The hostname of the cluster.                                                                     |
 | `location`                            | string        | N/A                  | Azure region where the resource should be deployed.                                               |
 | `memory_size_in_gbs`                  | number        | N/A                  | The memory size in GBs.                                                                          |

@@ -17,6 +17,10 @@ terraform {
       source  = "hashicorp/random"
       version = "~> 3.5"
     }
+    time = {
+      source  = "hashicorp/time"
+      version = "0.12.1"
+    }
     tls = {
       source  = "hashicorp/tls"
       version = "4.0.5"
@@ -136,6 +140,12 @@ module "avm_odaa_infra" {
   enable_telemetry = local.enable_telemetry
 }
 
+resource "time_sleep" "wait_5_min_after_deletion" {
+  destroy_duration = "5m"
+
+  depends_on = [module.avm_odaa_infra]
+}
+
 
 ##################### This is the VMCluster creation using the local module
 module "test_default" {
@@ -147,15 +157,16 @@ module "test_default" {
   vnet_id                         = module.odaa_vnet.resource_id
   subnet_id                       = module.odaa_vnet.subnets.snet-odaa.resource_id
   ssh_public_keys                 = [tls_private_key.generated_ssh_key.public_key_openssh]
+  backup_subnet_cidr              = "172.17.5.0/24"
 
-  backup_subnet_cidr           = "172.17.5.0/24"
-  cluster_name                 = "odaa-vmcl"
-  display_name                 = "odaa vm cluster"
-  data_storage_size_in_tbs     = 2
-  dbnode_storage_size_in_gbs   = 120
-  time_zone                    = "UTC"
-  memory_size_in_gbs           = 60
-  hostname                     = "hostname-${random_string.suffix.result}"
+  cluster_name = "odaa-vmcl"
+  hostname     = "hostname-${random_string.suffix.result}"
+
+  data_storage_size_in_tbs   = 2
+  dbnode_storage_size_in_gbs = 120
+  time_zone                  = "UTC"
+  memory_size_in_gbs         = 60
+
   cpu_core_count               = 4
   data_storage_percentage      = 80
   is_local_backup_enabled      = false
@@ -169,5 +180,10 @@ module "test_default" {
   tags             = local.tags
   enable_telemetry = local.enable_telemetry
 
-  depends_on = [module.avm_odaa_infra, module.odaa_vnet, azurerm_resource_group.this]
+  depends_on = [
+    module.avm_odaa_infra,
+    module.odaa_vnet,
+    azurerm_resource_group.this,
+    time_sleep.wait_5_min_after_deletion
+  ]
 }

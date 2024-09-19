@@ -13,8 +13,6 @@ resource "azapi_resource" "odaa_vm_cluster" {
       "hostname" : var.hostname,
       "domain" : var.domain,
       "cpuCoreCount" : var.cpu_core_count,
-      #"ocpuCount" : 3,
-      "clusterName" : var.cluster_name,
       "dataStoragePercentage" : var.data_storage_percentage,
       "isLocalBackupEnabled" : var.is_local_backup_enabled,
       "cloudExadataInfrastructureId" : var.cloud_exadata_infrastructure_id,
@@ -31,7 +29,7 @@ resource "azapi_resource" "odaa_vm_cluster" {
         "isHealthMonitoringEnabled" : var.is_health_monitoring_enabled,
         "isIncidentLogsEnabled" : var.is_incident_logs_enabled
       },
-      "displayName" : var.display_name,
+      "displayName" : var.cluster_name,
       "dbServers" : local.db_servers_ocids
     }
 

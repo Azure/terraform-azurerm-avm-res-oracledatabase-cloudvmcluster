@@ -35,7 +35,6 @@ module "oracle_db_cluster" {
   ssh_public_keys                 = [tls_private_key.generated_ssh_key.public_key_openssh]
 
   cluster_name               = "odaa-vmcl"
-  display_name               = "odaa vm cluster"
   data_storage_size_in_tbs   = 2
   dbnode_storage_size_in_gbs = 120
   memory_size_in_gbs         = 60

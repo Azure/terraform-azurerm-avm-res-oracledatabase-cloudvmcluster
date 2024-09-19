@@ -43,11 +43,6 @@ variable "dbnode_storage_size_in_gbs" {
   description = "The DB node storage size in GBs."
 }
 
-variable "display_name" {
-  type        = string
-  description = "The display name of the cluster."
-}
-
 variable "hostname" {
   type        = string
   description = "The hostname of the cluster."

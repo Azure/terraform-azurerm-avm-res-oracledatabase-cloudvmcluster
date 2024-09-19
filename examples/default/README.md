@@ -36,7 +36,6 @@ module "oracle_db_cluster" {
   ssh_public_keys                 = [tls_private_key.generated_ssh_key.public_key_openssh]
 
   cluster_name               = "odaa-vmcl"
-  display_name               = "odaa vm cluster"
   data_storage_size_in_tbs   = 2
   dbnode_storage_size_in_gbs = 120
   memory_size_in_gbs         = 60
@@ -162,6 +161,10 @@ terraform {
       source  = "hashicorp/random"
       version = "~> 3.5"
     }
+    time = {
+      source  = "hashicorp/time"
+      version = "0.12.1"
+    }
     tls = {
       source  = "hashicorp/tls"
       version = "4.0.5"
@@ -281,6 +284,12 @@ module "avm_odaa_infra" {
   enable_telemetry = local.enable_telemetry
 }
 
+resource "time_sleep" "wait_5_min_after_deletion" {
+  destroy_duration = "5m"
+
+  depends_on = [module.avm_odaa_infra]
+}
+
 
 ##################### This is the VMCluster creation using the local module
 module "test_default" {
@@ -292,15 +301,16 @@ module "test_default" {
   vnet_id                         = module.odaa_vnet.resource_id
   subnet_id                       = module.odaa_vnet.subnets.snet-odaa.resource_id
   ssh_public_keys                 = [tls_private_key.generated_ssh_key.public_key_openssh]
+  backup_subnet_cidr              = "172.17.5.0/24"
 
-  backup_subnet_cidr           = "172.17.5.0/24"
-  cluster_name                 = "odaa-vmcl"
-  display_name                 = "odaa vm cluster"
-  data_storage_size_in_tbs     = 2
-  dbnode_storage_size_in_gbs   = 120
-  time_zone                    = "UTC"
-  memory_size_in_gbs           = 60
-  hostname                     = "hostname-${random_string.suffix.result}"
+  cluster_name = "odaa-vmcl"
+  hostname     = "hostname-${random_string.suffix.result}"
+
+  data_storage_size_in_tbs   = 2
+  dbnode_storage_size_in_gbs = 120
+  time_zone                  = "UTC"
+  memory_size_in_gbs         = 60
+
   cpu_core_count               = 4
   data_storage_percentage      = 80
   is_local_backup_enabled      = false
@@ -314,7 +324,12 @@ module "test_default" {
   tags             = local.tags
   enable_telemetry = local.enable_telemetry
 
-  depends_on = [module.avm_odaa_infra, module.odaa_vnet, azurerm_resource_group.this]
+  depends_on = [
+    module.avm_odaa_infra,
+    module.odaa_vnet,
+    azurerm_resource_group.this,
+    time_sleep.wait_5_min_after_deletion
+  ]
 }
 ```
 
@@ -333,6 +348,8 @@ The following requirements are needed by this module:
 
 - <a name="requirement_random"></a> [random](#requirement\_random) (~> 3.5)
 
+- <a name="requirement_time"></a> [time](#requirement\_time) (0.12.1)
+
 - <a name="requirement_tls"></a> [tls](#requirement\_tls) (4.0.5)
 
 ## Resources
@@ -343,6 +360,7 @@ The following resources are used by this module:
 - [azurerm_resource_group.this](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/resource_group) (resource)
 - [local_file.private_key](https://registry.terraform.io/providers/hashicorp/local/2.5.1/docs/resources/file) (resource)
 - [random_string.suffix](https://registry.terraform.io/providers/hashicorp/random/latest/docs/resources/string) (resource)
+- [time_sleep.wait_5_min_after_deletion](https://registry.terraform.io/providers/hashicorp/time/0.12.1/docs/resources/sleep) (resource)
 - [tls_private_key.generated_ssh_key](https://registry.terraform.io/providers/hashicorp/tls/4.0.5/docs/resources/private_key) (resource)
 
 <!-- markdownlint-disable MD013 -->

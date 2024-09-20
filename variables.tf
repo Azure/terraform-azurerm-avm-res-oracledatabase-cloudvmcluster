@@ -1,25 +1,83 @@
+variable "backup_subnet_cidr" {
+  type        = string
+  description = "The backup subnet CIDR of the cluster."
+
+  validation {
+    condition     = can(regex("^(\\d+\\.){3}\\d+\\/\\d+$", var.backup_subnet_cidr))
+    error_message = "The backup subnet CIDR must be in the format 'XXX.XXX.XXX.XXX/XX'."
+  }
+}
+
+variable "cloud_exadata_infrastructure_id" {
+  type        = string
+  description = "The cloud Exadata infrastructure ID."
+}
+
+variable "cluster_name" {
+  type        = string
+  description = "The name of the the VM Cluster."
+
+  validation {
+    condition     = can(regex("^[a-z0-9-]{3,11}$", var.cluster_name))
+    error_message = "The name must be between 3 and 11 characters long and can only contain lowercase letters, numbers and hyphens."
+  }
+}
+
+variable "cpu_core_count" {
+  type        = number
+  description = "The CPU core count of the cluster."
+
+  validation {
+    condition     = var.cpu_core_count >= 4
+    error_message = "The CPU core count must be greater or equal than 4."
+  }
+}
+
+variable "data_storage_size_in_tbs" {
+  type        = number
+  description = "The data storage size in TBs."
+}
+
+variable "dbnode_storage_size_in_gbs" {
+  type        = number
+  description = "The DB node storage size in GBs."
+}
+
+variable "hostname" {
+  type        = string
+  description = "The hostname of the cluster."
+}
+
 variable "location" {
   type        = string
   description = "Azure region where the resource should be deployed."
   nullable    = false
 }
 
-variable "name" {
-  type        = string
-  description = "The name of the this resource."
-
-  validation {
-    condition     = can(regex("TODO", var.name))
-    error_message = "The name must be TODO." # TODO remove the example below once complete:
-    #condition     = can(regex("^[a-z0-9]{5,50}$", var.name))
-    #error_message = "The name must be between 5 and 50 characters long and can only contain lowercase letters and numbers."
-  }
+variable "memory_size_in_gbs" {
+  type        = number
+  description = "The memory size in GBs."
 }
 
-# This is required for most resource modules
-variable "resource_group_name" {
+variable "resource_group_id" {
   type        = string
-  description = "The resource group where the resources will be deployed."
+  description = "The resource group ID where the resources will be deployed."
+  nullable    = false
+}
+
+variable "ssh_public_keys" {
+  type        = list(string)
+  description = "The SSH public keys of the cluster."
+}
+
+variable "subnet_id" {
+  type        = string
+  description = "The subnet ID."
+}
+
+variable "vnet_id" {
+  type        = string
+  description = "The VNet ID."
 }
 
 # required AVM interfaces
@@ -45,6 +103,24 @@ A map describing customer-managed keys to associate with the resource. This incl
 DESCRIPTION  
 }
 
+variable "data_storage_percentage" {
+  type        = number
+  default     = 100
+  description = "The data storage percentage of the cluster."
+
+  validation {
+    condition     = var.data_storage_percentage >= 0 && var.data_storage_percentage <= 100
+    error_message = "The percentage must be a number between 0 and 100."
+  }
+}
+
+variable "db_servers" {
+  type        = list(string)
+  default     = []
+  description = "DB servers of the cluster, if not specified, the default DB servers from the Exadata Infrastructure will be used."
+}
+
+# tflint-ignore: terraform_unused_declarations
 variable "diagnostic_settings" {
   type = map(object({
     name                                     = optional(string, null)
@@ -90,6 +166,12 @@ DESCRIPTION
   }
 }
 
+variable "domain" {
+  type        = string
+  default     = null
+  description = "The domain of the cluster."
+}
+
 variable "enable_telemetry" {
   type        = bool
   default     = true
@@ -101,6 +183,59 @@ DESCRIPTION
   nullable    = false
 }
 
+variable "gi_version" {
+  type        = string
+  default     = "19.0.0.0"
+  description = "The GI version of the cluster."
+
+  validation {
+    condition     = can(regex("^(\\d+\\.){2}\\d+\\.\\d+$", var.gi_version))
+    error_message = "The GI version must be in the format 'XX.XX.XX.XX'."
+  }
+}
+
+variable "is_diagnostic_events_enabled" {
+  type        = bool
+  default     = false
+  description = "The diagnostic events enabled status of the cluster."
+}
+
+variable "is_health_monitoring_enabled" {
+  type        = bool
+  default     = false
+  description = "The health monitoring enabled status of the cluster."
+}
+
+variable "is_incident_logs_enabled" {
+  type        = bool
+  default     = false
+  description = "The incident logs enabled status of the cluster."
+}
+
+variable "is_local_backup_enabled" {
+  type        = bool
+  default     = false
+  description = "The local backup enabled status of the cluster."
+}
+
+variable "is_sparse_diskgroup_enabled" {
+  type        = bool
+  default     = false
+  description = "The sparse diskgroup enabled status of the cluster."
+}
+
+variable "license_model" {
+  type        = string
+  default     = "LicenseIncluded"
+  description = "The license model of the cluster."
+
+  validation {
+    condition     = var.license_model == "LicenseIncluded" || var.license_model == "BringYourOwnLicense"
+    error_message = "The license model must be either 'LicenseIncluded' or 'BringYourOwnLicense'."
+  }
+}
+
+# tflint-ignore: terraform_unused_declarations
 variable "lock" {
   type = object({
     kind = string
@@ -136,6 +271,34 @@ DESCRIPTION
   nullable    = false
 }
 
+variable "nsg_cidrs" {
+  type = set(object({
+    source = string
+    destination_port_range = object({
+      min = string
+      max = string
+    })
+  }))
+  default     = null
+  description = <<DESCRIPTION
+Add additional Network ingress rules for the network security group of the VM cluster:
+
+ - `source` - The source IP address range.
+ - `destination_port_range` - The destination port range. The following properties can be specified:
+   - `min` - The minimum port number.
+   - `max` - The maximum port number.
+ example:
+ nsg_cidrs = [{
+     source = 0.0.0.0/0
+     destination_port_range = {
+         min = "1521"
+         max = "1522"
+       }
+   }]  
+DESCRIPTION
+}
+
+# tflint-ignore: terraform_unused_declarations
 variable "private_endpoints" {
   type = map(object({
     name = optional(string, null)
@@ -147,6 +310,7 @@ variable "private_endpoints" {
       condition                              = optional(string, null)
       condition_version                      = optional(string, null)
       delegated_managed_identity_resource_id = optional(string, null)
+      principal_type                         = optional(string, null)
     })), {})
     lock = optional(object({
       kind = string
@@ -154,6 +318,7 @@ variable "private_endpoints" {
     }), null)
     tags                                    = optional(map(string), null)
     subnet_resource_id                      = string
+    subresource_name                        = string # NOTE: `subresource_name` can be excluded if the resource does not support multiple sub resource types (e.g. storage account supports blob, queue, etc)
     private_dns_zone_group_name             = optional(string, "default")
     private_dns_zone_resource_ids           = optional(set(string), [])
     application_security_group_associations = optional(map(string), {})
@@ -168,24 +333,35 @@ variable "private_endpoints" {
   }))
   default     = {}
   description = <<DESCRIPTION
-A map of private endpoints to create on this resource. The map key is deliberately arbitrary to avoid issues where map keys maybe unknown at plan time.
-
-- `name` - (Optional) The name of the private endpoint. One will be generated if not set.
-- `role_assignments` - (Optional) A map of role assignments to create on the private endpoint. The map key is deliberately arbitrary to avoid issues where map keys maybe unknown at plan time. See `var.role_assignments` for more information.
-- `lock` - (Optional) The lock level to apply to the private endpoint. Default is `None`. Possible values are `None`, `CanNotDelete`, and `ReadOnly`.
-- `tags` - (Optional) A mapping of tags to assign to the private endpoint.
-- `subnet_resource_id` - The resource ID of the subnet to deploy the private endpoint in.
-- `private_dns_zone_group_name` - (Optional) The name of the private DNS zone group. One will be generated if not set.
-- `private_dns_zone_resource_ids` - (Optional) A set of resource IDs of private DNS zones to associate with the private endpoint. If not set, no zone groups will be created and the private endpoint will not be associated with any private DNS zones. DNS records must be managed external to this module.
-- `application_security_group_resource_ids` - (Optional) A map of resource IDs of application security groups to associate with the private endpoint. The map key is deliberately arbitrary to avoid issues where map keys maybe unknown at plan time.
-- `private_service_connection_name` - (Optional) The name of the private service connection. One will be generated if not set.
-- `network_interface_name` - (Optional) The name of the network interface. One will be generated if not set.
-- `location` - (Optional) The Azure location where the resources will be deployed. Defaults to the location of the resource group.
-- `resource_group_name` - (Optional) The resource group where the resources will be deployed. Defaults to the resource group of this resource.
-- `ip_configurations` - (Optional) A map of IP configurations to create on the private endpoint. If not specified the platform will create one. The map key is deliberately arbitrary to avoid issues where map keys maybe unknown at plan time.
-  - `name` - The name of the IP configuration.
-  - `private_ip_address` - The private IP address of the IP configuration.
-DESCRIPTION
+  A map of private endpoints to create on the Key Vault. The map key is deliberately arbitrary to avoid issues where map keys maybe unknown at plan time.
+  
+  - `name` - (Optional) The name of the private endpoint. One will be generated if not set.
+  - `role_assignments` - (Optional) A map of role assignments to create on the private endpoint. The map key is deliberately arbitrary to avoid issues where map keys maybe unknown at plan time. See `var.role_assignments` for more information.
+    - `role_definition_id_or_name` - The ID or name of the role definition to assign to the principal.
+    - `principal_id` - The ID of the principal to assign the role to.
+    - `description` - (Optional) The description of the role assignment.
+    - `skip_service_principal_aad_check` - (Optional) If set to true, skips the Azure Active Directory check for the service principal in the tenant. Defaults to false.
+    - `condition` - (Optional) The condition which will be used to scope the role assignment.
+    - `condition_version` - (Optional) The version of the condition syntax. Leave as `null` if you are not using a condition, if you are then valid values are '2.0'.
+    - `delegated_managed_identity_resource_id` - (Optional) The delegated Azure Resource Id which contains a Managed Identity. Changing this forces a new resource to be created. This field is only used in cross-tenant scenario.
+    - `principal_type` - (Optional) The type of the `principal_id`. Possible values are `User`, `Group` and `ServicePrincipal`. It is necessary to explicitly set this attribute when creating role assignments if the principal creating the assignment is constrained by ABAC rules that filters on the PrincipalType attribute.
+  - `lock` - (Optional) The lock level to apply to the private endpoint. Default is `None`. Possible values are `None`, `CanNotDelete`, and `ReadOnly`.
+    - `kind` - (Required) The type of lock. Possible values are `\"CanNotDelete\"` and `\"ReadOnly\"`.
+    - `name` - (Optional) The name of the lock. If not specified, a name will be generated based on the `kind` value. Changing this forces the creation of a new resource.
+  - `tags` - (Optional) A mapping of tags to assign to the private endpoint.
+  - `subnet_resource_id` - The resource ID of the subnet to deploy the private endpoint in.
+  - `subresource_name` - The name of the sub resource for the private endpoint.
+  - `private_dns_zone_group_name` - (Optional) The name of the private DNS zone group. One will be generated if not set.
+  - `private_dns_zone_resource_ids` - (Optional) A set of resource IDs of private DNS zones to associate with the private endpoint. If not set, no zone groups will be created and the private endpoint will not be associated with any private DNS zones. DNS records must be managed external to this module.
+  - `application_security_group_resource_ids` - (Optional) A map of resource IDs of application security groups to associate with the private endpoint. The map key is deliberately arbitrary to avoid issues where map keys maybe unknown at plan time.
+  - `private_service_connection_name` - (Optional) The name of the private service connection. One will be generated if not set.
+  - `network_interface_name` - (Optional) The name of the network interface. One will be generated if not set.
+  - `location` - (Optional) The Azure location where the resources will be deployed. Defaults to the location of the resource group.
+  - `resource_group_name` - (Optional) The resource group where the resources will be deployed. Defaults to the resource group of the Key Vault.
+  - `ip_configurations` - (Optional) A map of IP configurations to create on the private endpoint. If not specified the platform will create one. The map key is deliberately arbitrary to avoid issues where map keys maybe unknown at plan time.
+    - `name` - The name of the IP configuration.
+    - `private_ip_address` - The private IP address of the IP configuration.
+  DESCRIPTION
   nullable    = false
 }
 
@@ -193,6 +369,7 @@ DESCRIPTION
 # or if it is to be managed externally, e.g. using Azure Policy.
 # https://github.com/Azure/terraform-azurerm-avm-res-keyvault-vault/issues/32
 # Alternatively you can use AzAPI, which does not have this issue.
+# tflint-ignore: terraform_unused_declarations
 variable "private_endpoints_manage_dns_zone_group" {
   type        = bool
   default     = true
@@ -200,6 +377,7 @@ variable "private_endpoints_manage_dns_zone_group" {
   nullable    = false
 }
 
+# tflint-ignore: terraform_unused_declarations
 variable "role_assignments" {
   type = map(object({
     role_definition_id_or_name             = string
@@ -209,6 +387,7 @@ variable "role_assignments" {
     condition                              = optional(string, null)
     condition_version                      = optional(string, null)
     delegated_managed_identity_resource_id = optional(string, null)
+    principal_type                         = optional(string, null)
   }))
   default     = {}
   description = <<DESCRIPTION
@@ -231,4 +410,10 @@ variable "tags" {
   type        = map(string)
   default     = null
   description = "(Optional) Tags of the resource."
+}
+
+variable "time_zone" {
+  type        = string
+  default     = "UTC"
+  description = "The time zone of the cluster."
 }

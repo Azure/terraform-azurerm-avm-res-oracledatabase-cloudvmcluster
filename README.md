@@ -1,56 +1,120 @@
 <!-- BEGIN_TF_DOCS -->
-# terraform-azurerm-avm-template
 
-This is a template repo for Terraform Azure Verified Modules.
+# avm-res-oracledatabase-cloudvmcluster
 
-Things to do:
+This repository contains a Terraform module for deploying Oracle Database Cloud VM Clusters using Azure Verified Modules (AVM). The module provisions scalable Oracle Cloud VM clusters in an enterprise-ready configuration on Microsoft Azure.
 
-1. Set up a GitHub repo environment called `test`.
-1. Configure environment protection rule to ensure that approval is required before deploying to this environment.
-1. Install Docker Desktop to run tests
+## Features
 
-> [!IMPORTANT]
-> As the overall AVM framework is not GA (generally available) yet - the CI framework and test automation is not fully functional and implemented across all supported languages yet - breaking changes are expected, and additional customer feedback is yet to be gathered and incorporated. Hence, modules **MUST NOT** be published at version `1.0.0` or higher at this time.
->
-> All module **MUST** be published as a pre-release version (e.g., `0.1.0`, `0.1.1`, `0.2.0`, etc.) until the AVM framework becomes GA.
->
-> However, it is important to note that this **DOES NOT** mean that the modules cannot be consumed and utilized. They **CAN** be leveraged in all types of environments (dev, test, prod etc.). Consumers can treat them just like any other IaC module and raise issues or feature requests against them as they learn from the usage of the module. Consumers should also read the release notes for each version, if considering updating to a more recent version of a module to see if there are any considerations or breaking changes etc.
+- **Automated Oracle VM Cluster Deployment**: Deploys Oracle Cloud VM Clusters.
+- **Customizable Configuration**: Supports multiple configurations, including VM size, number of nodes, database version, and networking.
+- **AVM Compliance**: Ensures compliance with Azure Verified Module standards.
+
+## Prerequisites
+
+- **Terraform** version 1.0 or higher
+- **Azure CLI**
+- Oracle Cloud subscription
+
+## Usage
+
+An example of using the module in a Terraform configuration:
+
+```hcl
+module "oracle_vm_cluster" {
+  source = "github.com/sihbher/avm-res-oracledatabase-cloudvmcluster"
+
+  resource_group_name = "example-resource-group"
+  location            = "eastus"
+  vm_cluster_name     = "example-vm-cluster"
+
+  db_version = "19c"
+  vm_size    = "Standard_D8s_v3"
+  node_count = 2
+
+  subnet_id = "/subscriptions/{subscription_id}/resourceGroups/{resource_group_name}/providers/Microsoft.Network/virtualNetworks/{vnet_name}/subnets/{subnet_name}"
+}
+```
+
+## Inputs
+
+| Name                                  | Type          | Default              | Description                                                                                      |
+|---------------------------------------|---------------|----------------------|--------------------------------------------------------------------------------------------------|
+| `backup_subnet_cidr`                  | string        | N/A                  | The backup subnet CIDR of the cluster.                                                           |
+| `cloud_exadata_infrastructure_id`     | string        | N/A                  | The cloud Exadata infrastructure ID.                                                             |
+| `cluster_name`                        | string        | N/A                  | The name of the VM Cluster. Must be 3-11 characters long, lowercase letters, numbers, and hyphens.|
+| `cpu_core_count`                      | number        | N/A                  | The CPU core count of the cluster. Must be ≥ 4.                                                  |
+| `data_storage_size_in_tbs`            | number        | N/A                  | The data storage size in TBs.                                                                    |
+| `dbnode_storage_size_in_gbs`          | number        | N/A                  | The DB node storage size in GBs.                                                                 |
+| `hostname`                            | string        | N/A                  | The hostname of the cluster.                                                                     |
+| `location`                            | string        | N/A                  | Azure region where the resource should be deployed.                                               |
+| `memory_size_in_gbs`                  | number        | N/A                  | The memory size in GBs.                                                                          |
+| `resource_group_id`                   | string        | N/A                  | The resource group ID where the resources will be deployed.                                      |
+| `ssh_public_keys`                     | list(string)  | N/A                  | The SSH public keys of the cluster.                                                              |
+| `subnet_id`                           | string        | N/A                  | The subnet ID.                                                                                    |
+| `vnet_id`                             | string        | N/A                  | The VNet ID.                                                                                     |
+| `customer_managed_key`                | object        | null                 | Customer-managed key object with Key Vault and identity details.                                 |
+| `data_storage_percentage`             | number        | 100                  | The data storage percentage of the cluster (0-100).                                               |
+| `db_servers`                          | list(string)  | []                   | DB servers of the cluster. Defaults to Exadata Infrastructure DB servers if not specified.        |
+| `diagnostic_settings`                 | map(object)   | {}                   | Diagnostic settings configuration for logs and metrics.                                          |
+| `domain`                              | string        | null                 | The domain of the cluster.                                                                       |
+| `enable_telemetry`                    | bool          | true                 | Controls telemetry collection.                                                                   |
+| `gi_version`                          | string        | "19.0.0.0"           | The GI version of the cluster, must be in format `XX.XX.XX.XX`.                                  |
+| `is_diagnostic_events_enabled`        | bool          | false                | Whether diagnostic events are enabled.                                                           |
+| `is_health_monitoring_enabled`        | bool          | false                | Whether health monitoring is enabled.                                                            |
+| `is_incident_logs_enabled`            | bool          | false                | Whether incident logs are enabled.                                                               |
+| `is_local_backup_enabled`             | bool          | false                | Whether local backup is enabled.                                                                 |
+| `is_sparse_diskgroup_enabled`         | bool          | false                | Whether the sparse diskgroup is enabled.                                                         |
+| `license_model`                       | string        | "LicenseIncluded"    | The license model, must be either `LicenseIncluded` or `BringYourOwnLicense`.                    |
+| `lock`                                | object        | null                 | Resource lock configuration for the cluster.                                                     |
+| `managed_identities`                  | object        | {}                   | Managed identity configuration (system and user-assigned identities).                            |
+| `nsg_cidrs`                           | set(object)   | null                 | Additional network security group ingress rules for the cluster.                                 |
+| `private_endpoints`                   | map(object)   | {}                   | Private endpoints configuration for the cluster.                                                 |
+| `private_endpoints_manage_dns_zone_group`| bool        | true                 | Controls whether DNS zone groups are managed by this module.                                     |
+| `role_assignments`                    | map(object)   | {}                   | Role assignments configuration for the cluster.                                                  |
+| `tags`                                | map(string)   | null                 | Optional tags for the resource.                                                                  |
+| `time_zone`                           | string        | "UTC"                | Time zone of the cluster.                                                                        |
+
+This table includes all relevant variables.
+
+## Outputs
+
+| Name            | Description                                |
+|-----------------|--------------------------------------------|
+| `vm_cluster_id` | The ID of the deployed Oracle VM cluster   |
+| `public_ip`     | The public IP address of the VM cluster    |
+
+## License
+
+This project is licensed under the [MIT License](LICENSE).
+
+## Contributing
+
+We welcome contributions to improve this module. Ensure your contributions comply with AVM best practices and run pre-commit checks before submitting a pull request.
 
 <!-- markdownlint-disable MD033 -->
 ## Requirements
 
 The following requirements are needed by this module:
 
-- <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) (~> 1.5)
+- <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) (>= 1.9.2)
 
-- <a name="requirement_azurerm"></a> [azurerm](#requirement\_azurerm) (~> 3.71)
+- <a name="requirement_azapi"></a> [azapi](#requirement\_azapi) (~> 1.14.0)
+
+- <a name="requirement_azurerm"></a> [azurerm](#requirement\_azurerm) (~> 3.116.0)
 
 - <a name="requirement_modtm"></a> [modtm](#requirement\_modtm) (~> 0.3)
 
 - <a name="requirement_random"></a> [random](#requirement\_random) (~> 3.5)
 
-## Providers
-
-The following providers are used by this module:
-
-- <a name="provider_azurerm"></a> [azurerm](#provider\_azurerm) (~> 3.71)
-
-- <a name="provider_modtm"></a> [modtm](#provider\_modtm) (~> 0.3)
-
-- <a name="provider_random"></a> [random](#provider\_random) (~> 3.5)
-
 ## Resources
 
 The following resources are used by this module:
 
-- [azurerm_management_lock.this](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/management_lock) (resource)
-- [azurerm_private_endpoint.this_managed_dns_zone_groups](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/private_endpoint) (resource)
-- [azurerm_private_endpoint.this_unmanaged_dns_zone_groups](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/private_endpoint) (resource)
-- [azurerm_private_endpoint_application_security_group_association.this](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/private_endpoint_application_security_group_association) (resource)
-- [azurerm_resource_group.TODO](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/resource_group) (resource)
-- [azurerm_role_assignment.this](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/role_assignment) (resource)
+- [azapi_resource.odaa_vm_cluster](https://registry.terraform.io/providers/azure/azapi/latest/docs/resources/resource) (resource)
 - [modtm_telemetry.telemetry](https://registry.terraform.io/providers/azure/modtm/latest/docs/resources/telemetry) (resource)
 - [random_uuid.telemetry](https://registry.terraform.io/providers/hashicorp/random/latest/docs/resources/uuid) (resource)
+- [azapi_resource_list.list_dbservers_by_cloudexadata_infrastructure](https://registry.terraform.io/providers/azure/azapi/latest/docs/data-sources/resource_list) (data source)
 - [azurerm_client_config.telemetry](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/data-sources/client_config) (data source)
 - [modtm_module_source.telemetry](https://registry.terraform.io/providers/azure/modtm/latest/docs/data-sources/module_source) (data source)
 
@@ -59,21 +123,81 @@ The following resources are used by this module:
 
 The following input variables are required:
 
+### <a name="input_backup_subnet_cidr"></a> [backup\_subnet\_cidr](#input\_backup\_subnet\_cidr)
+
+Description: The backup subnet CIDR of the cluster.
+
+Type: `string`
+
+### <a name="input_cloud_exadata_infrastructure_id"></a> [cloud\_exadata\_infrastructure\_id](#input\_cloud\_exadata\_infrastructure\_id)
+
+Description: The cloud Exadata infrastructure ID.
+
+Type: `string`
+
+### <a name="input_cluster_name"></a> [cluster\_name](#input\_cluster\_name)
+
+Description: The name of the the VM Cluster.
+
+Type: `string`
+
+### <a name="input_cpu_core_count"></a> [cpu\_core\_count](#input\_cpu\_core\_count)
+
+Description: The CPU core count of the cluster.
+
+Type: `number`
+
+### <a name="input_data_storage_size_in_tbs"></a> [data\_storage\_size\_in\_tbs](#input\_data\_storage\_size\_in\_tbs)
+
+Description: The data storage size in TBs.
+
+Type: `number`
+
+### <a name="input_dbnode_storage_size_in_gbs"></a> [dbnode\_storage\_size\_in\_gbs](#input\_dbnode\_storage\_size\_in\_gbs)
+
+Description: The DB node storage size in GBs.
+
+Type: `number`
+
+### <a name="input_hostname"></a> [hostname](#input\_hostname)
+
+Description: The hostname of the cluster.
+
+Type: `string`
+
 ### <a name="input_location"></a> [location](#input\_location)
 
 Description: Azure region where the resource should be deployed.
 
 Type: `string`
 
-### <a name="input_name"></a> [name](#input\_name)
+### <a name="input_memory_size_in_gbs"></a> [memory\_size\_in\_gbs](#input\_memory\_size\_in\_gbs)
 
-Description: The name of the this resource.
+Description: The memory size in GBs.
+
+Type: `number`
+
+### <a name="input_resource_group_id"></a> [resource\_group\_id](#input\_resource\_group\_id)
+
+Description: The resource group ID where the resources will be deployed.
 
 Type: `string`
 
-### <a name="input_resource_group_name"></a> [resource\_group\_name](#input\_resource\_group\_name)
+### <a name="input_ssh_public_keys"></a> [ssh\_public\_keys](#input\_ssh\_public\_keys)
 
-Description: The resource group where the resources will be deployed.
+Description: The SSH public keys of the cluster.
+
+Type: `list(string)`
+
+### <a name="input_subnet_id"></a> [subnet\_id](#input\_subnet\_id)
+
+Description: The subnet ID.
+
+Type: `string`
+
+### <a name="input_vnet_id"></a> [vnet\_id](#input\_vnet\_id)
+
+Description: The VNet ID.
 
 Type: `string`
 
@@ -104,6 +228,22 @@ object({
 ```
 
 Default: `null`
+
+### <a name="input_data_storage_percentage"></a> [data\_storage\_percentage](#input\_data\_storage\_percentage)
+
+Description: The data storage percentage of the cluster.
+
+Type: `number`
+
+Default: `100`
+
+### <a name="input_db_servers"></a> [db\_servers](#input\_db\_servers)
+
+Description: DB servers of the cluster, if not specified, the default DB servers from the Exadata Infrastructure will be used.
+
+Type: `list(string)`
+
+Default: `[]`
 
 ### <a name="input_diagnostic_settings"></a> [diagnostic\_settings](#input\_diagnostic\_settings)
 
@@ -139,6 +279,14 @@ map(object({
 
 Default: `{}`
 
+### <a name="input_domain"></a> [domain](#input\_domain)
+
+Description: The domain of the cluster.
+
+Type: `string`
+
+Default: `null`
+
 ### <a name="input_enable_telemetry"></a> [enable\_telemetry](#input\_enable\_telemetry)
 
 Description: This variable controls whether or not telemetry is enabled for the module.  
@@ -148,6 +296,62 @@ If it is set to false, then no telemetry will be collected.
 Type: `bool`
 
 Default: `true`
+
+### <a name="input_gi_version"></a> [gi\_version](#input\_gi\_version)
+
+Description: The GI version of the cluster.
+
+Type: `string`
+
+Default: `"19.0.0.0"`
+
+### <a name="input_is_diagnostic_events_enabled"></a> [is\_diagnostic\_events\_enabled](#input\_is\_diagnostic\_events\_enabled)
+
+Description: The diagnostic events enabled status of the cluster.
+
+Type: `bool`
+
+Default: `false`
+
+### <a name="input_is_health_monitoring_enabled"></a> [is\_health\_monitoring\_enabled](#input\_is\_health\_monitoring\_enabled)
+
+Description: The health monitoring enabled status of the cluster.
+
+Type: `bool`
+
+Default: `false`
+
+### <a name="input_is_incident_logs_enabled"></a> [is\_incident\_logs\_enabled](#input\_is\_incident\_logs\_enabled)
+
+Description: The incident logs enabled status of the cluster.
+
+Type: `bool`
+
+Default: `false`
+
+### <a name="input_is_local_backup_enabled"></a> [is\_local\_backup\_enabled](#input\_is\_local\_backup\_enabled)
+
+Description: The local backup enabled status of the cluster.
+
+Type: `bool`
+
+Default: `false`
+
+### <a name="input_is_sparse_diskgroup_enabled"></a> [is\_sparse\_diskgroup\_enabled](#input\_is\_sparse\_diskgroup\_enabled)
+
+Description: The sparse diskgroup enabled status of the cluster.
+
+Type: `bool`
+
+Default: `false`
+
+### <a name="input_license_model"></a> [license\_model](#input\_license\_model)
+
+Description: The license model of the cluster.
+
+Type: `string`
+
+Default: `"LicenseIncluded"`
 
 ### <a name="input_lock"></a> [lock](#input\_lock)
 
@@ -185,25 +389,67 @@ object({
 
 Default: `{}`
 
+### <a name="input_nsg_cidrs"></a> [nsg\_cidrs](#input\_nsg\_cidrs)
+
+Description: Add additional Network ingress rules for the network security group of the VM cluster:
+
+ - `source` - The source IP address range.
+ - `destination_port_range` - The destination port range. The following properties can be specified:
+   - `min` - The minimum port number.
+   - `max` - The maximum port number.  
+ example:  
+ nsg\_cidrs = [{  
+     source = 0.0.0.0/0  
+     destination\_port\_range = {  
+         min = "1521"  
+         max = "1522"
+       }
+   }]  
+
+Type:
+
+```hcl
+set(object({
+    source = string
+    destination_port_range = object({
+      min = string
+      max = string
+    })
+  }))
+```
+
+Default: `null`
+
 ### <a name="input_private_endpoints"></a> [private\_endpoints](#input\_private\_endpoints)
 
-Description: A map of private endpoints to create on this resource. The map key is deliberately arbitrary to avoid issues where map keys maybe unknown at plan time.
+Description:   A map of private endpoints to create on the Key Vault. The map key is deliberately arbitrary to avoid issues where map keys maybe unknown at plan time.
 
-- `name` - (Optional) The name of the private endpoint. One will be generated if not set.
-- `role_assignments` - (Optional) A map of role assignments to create on the private endpoint. The map key is deliberately arbitrary to avoid issues where map keys maybe unknown at plan time. See `var.role_assignments` for more information.
-- `lock` - (Optional) The lock level to apply to the private endpoint. Default is `None`. Possible values are `None`, `CanNotDelete`, and `ReadOnly`.
-- `tags` - (Optional) A mapping of tags to assign to the private endpoint.
-- `subnet_resource_id` - The resource ID of the subnet to deploy the private endpoint in.
-- `private_dns_zone_group_name` - (Optional) The name of the private DNS zone group. One will be generated if not set.
-- `private_dns_zone_resource_ids` - (Optional) A set of resource IDs of private DNS zones to associate with the private endpoint. If not set, no zone groups will be created and the private endpoint will not be associated with any private DNS zones. DNS records must be managed external to this module.
-- `application_security_group_resource_ids` - (Optional) A map of resource IDs of application security groups to associate with the private endpoint. The map key is deliberately arbitrary to avoid issues where map keys maybe unknown at plan time.
-- `private_service_connection_name` - (Optional) The name of the private service connection. One will be generated if not set.
-- `network_interface_name` - (Optional) The name of the network interface. One will be generated if not set.
-- `location` - (Optional) The Azure location where the resources will be deployed. Defaults to the location of the resource group.
-- `resource_group_name` - (Optional) The resource group where the resources will be deployed. Defaults to the resource group of this resource.
-- `ip_configurations` - (Optional) A map of IP configurations to create on the private endpoint. If not specified the platform will create one. The map key is deliberately arbitrary to avoid issues where map keys maybe unknown at plan time.
-  - `name` - The name of the IP configuration.
-  - `private_ip_address` - The private IP address of the IP configuration.
+  - `name` - (Optional) The name of the private endpoint. One will be generated if not set.
+  - `role_assignments` - (Optional) A map of role assignments to create on the private endpoint. The map key is deliberately arbitrary to avoid issues where map keys maybe unknown at plan time. See `var.role_assignments` for more information.
+    - `role_definition_id_or_name` - The ID or name of the role definition to assign to the principal.
+    - `principal_id` - The ID of the principal to assign the role to.
+    - `description` - (Optional) The description of the role assignment.
+    - `skip_service_principal_aad_check` - (Optional) If set to true, skips the Azure Active Directory check for the service principal in the tenant. Defaults to false.
+    - `condition` - (Optional) The condition which will be used to scope the role assignment.
+    - `condition_version` - (Optional) The version of the condition syntax. Leave as `null` if you are not using a condition, if you are then valid values are '2.0'.
+    - `delegated_managed_identity_resource_id` - (Optional) The delegated Azure Resource Id which contains a Managed Identity. Changing this forces a new resource to be created. This field is only used in cross-tenant scenario.
+    - `principal_type` - (Optional) The type of the `principal_id`. Possible values are `User`, `Group` and `ServicePrincipal`. It is necessary to explicitly set this attribute when creating role assignments if the principal creating the assignment is constrained by ABAC rules that filters on the PrincipalType attribute.
+  - `lock` - (Optional) The lock level to apply to the private endpoint. Default is `None`. Possible values are `None`, `CanNotDelete`, and `ReadOnly`.
+    - `kind` - (Required) The type of lock. Possible values are `\"CanNotDelete\"` and `\"ReadOnly\"`.
+    - `name` - (Optional) The name of the lock. If not specified, a name will be generated based on the `kind` value. Changing this forces the creation of a new resource.
+  - `tags` - (Optional) A mapping of tags to assign to the private endpoint.
+  - `subnet_resource_id` - The resource ID of the subnet to deploy the private endpoint in.
+  - `subresource_name` - The name of the sub resource for the private endpoint.
+  - `private_dns_zone_group_name` - (Optional) The name of the private DNS zone group. One will be generated if not set.
+  - `private_dns_zone_resource_ids` - (Optional) A set of resource IDs of private DNS zones to associate with the private endpoint. If not set, no zone groups will be created and the private endpoint will not be associated with any private DNS zones. DNS records must be managed external to this module.
+  - `application_security_group_resource_ids` - (Optional) A map of resource IDs of application security groups to associate with the private endpoint. The map key is deliberately arbitrary to avoid issues where map keys maybe unknown at plan time.
+  - `private_service_connection_name` - (Optional) The name of the private service connection. One will be generated if not set.
+  - `network_interface_name` - (Optional) The name of the network interface. One will be generated if not set.
+  - `location` - (Optional) The Azure location where the resources will be deployed. Defaults to the location of the resource group.
+  - `resource_group_name` - (Optional) The resource group where the resources will be deployed. Defaults to the resource group of the Key Vault.
+  - `ip_configurations` - (Optional) A map of IP configurations to create on the private endpoint. If not specified the platform will create one. The map key is deliberately arbitrary to avoid issues where map keys maybe unknown at plan time.
+    - `name` - The name of the IP configuration.
+    - `private_ip_address` - The private IP address of the IP configuration.
 
 Type:
 
@@ -218,6 +464,7 @@ map(object({
       condition                              = optional(string, null)
       condition_version                      = optional(string, null)
       delegated_managed_identity_resource_id = optional(string, null)
+      principal_type                         = optional(string, null)
     })), {})
     lock = optional(object({
       kind = string
@@ -225,6 +472,7 @@ map(object({
     }), null)
     tags                                    = optional(map(string), null)
     subnet_resource_id                      = string
+    subresource_name                        = string # NOTE: `subresource_name` can be excluded if the resource does not support multiple sub resource types (e.g. storage account supports blob, queue, etc)
     private_dns_zone_group_name             = optional(string, "default")
     private_dns_zone_resource_ids           = optional(set(string), [])
     application_security_group_associations = optional(map(string), {})
@@ -273,6 +521,7 @@ map(object({
     condition                              = optional(string, null)
     condition_version                      = optional(string, null)
     delegated_managed_identity_resource_id = optional(string, null)
+    principal_type                         = optional(string, null)
   }))
 ```
 
@@ -286,17 +535,25 @@ Type: `map(string)`
 
 Default: `null`
 
+### <a name="input_time_zone"></a> [time\_zone](#input\_time\_zone)
+
+Description: The time zone of the cluster.
+
+Type: `string`
+
+Default: `"UTC"`
+
 ## Outputs
 
 The following outputs are exported:
 
-### <a name="output_private_endpoints"></a> [private\_endpoints](#output\_private\_endpoints)
-
-Description:   A map of the private endpoints created.
-
 ### <a name="output_resource"></a> [resource](#output\_resource)
 
 Description: This is the full output for the resource.
+
+### <a name="output_resource_id"></a> [resource\_id](#output\_resource\_id)
+
+Description: Resource ID of the ODAA VM Cluster
 
 ## Modules
 

@@ -4,6 +4,9 @@
 
 This repository contains a Terraform module for deploying Oracle Database Cloud VM Clusters using Azure Verified Modules (AVM). The module provisions scalable Oracle Cloud VM clusters in an enterprise-ready configuration on Microsoft Azure.
 
+## Known issues
+- Destroying VMCluster: When running the destroy command, VMCluster takes longer than the API reports. As a result, Terraform attempts to destroy the Cloud Exadata Infrastructure, which fails because the VMCluster hasn’t been fully deleted yet.
+
 ## Features
 
 - **Automated Oracle VM Cluster Deployment**: Deploys Oracle Cloud VM Clusters.

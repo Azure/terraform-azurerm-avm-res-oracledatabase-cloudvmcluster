@@ -558,6 +558,10 @@ Description: This is the full output for the resource.
 
 Description: Resource ID of the ODAA VM Cluster
 
+### <a name="output_vm_cluster_ocid"></a> [vm\_cluster\_ocid](#output\_vm\_cluster\_ocid)
+
+Description: n/a
+
 ## Modules
 
 No modules.

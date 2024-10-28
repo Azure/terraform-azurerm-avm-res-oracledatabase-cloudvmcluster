@@ -77,6 +77,9 @@ module "oracle_vm_cluster" {
 | `role_assignments`                    | map(object)   | {}                   | Role assignments configuration for the cluster.                                                  |
 | `tags`                                | map(string)   | null                 | Optional tags for the resource.                                                                  |
 | `time_zone`                           | string        | "UTC"                | Time zone of the cluster.                                                                        |
+| `scan_listener_port_tcp`                           | number        | 1521                | The TCP Single Client Access Name (SCAN) port. The default port is 1521.                                                                        |
+| `scan_listener_port_tcp_ssl`                           | number        | 2484                | The TCP Single Client Access Name (SCAN) port for SSL. The default port is 2484.                                                                        |
+This table includes all relevant variables.
 
 This table includes all relevant variables.
 
@@ -84,8 +87,9 @@ This table includes all relevant variables.
 
 | Name            | Description                                |
 |-----------------|--------------------------------------------|
-| `vm_cluster_id` | The ID of the deployed Oracle VM cluster   |
-| `public_ip`     | The public IP address of the VM cluster    |
+| `resource` | This is the full output for the resource.   |
+| `resource_id`     | Resource ID of the ODAA VM Cluster    |
+| `vm_cluster_ocid` | Value of the OCID of the ODAA VM Cluster |
 
 ## License
 
@@ -530,6 +534,22 @@ map(object({
 
 Default: `{}`
 
+### <a name="input_scan_listener_port_tcp"></a> [scan\_listener\_port\_tcp](#input\_scan\_listener\_port\_tcp)
+
+Description: The TCP Single Client Access Name (SCAN) port. The default port is 1521.
+
+Type: `number`
+
+Default: `1521`
+
+### <a name="input_scan_listener_port_tcp_ssl"></a> [scan\_listener\_port\_tcp\_ssl](#input\_scan\_listener\_port\_tcp\_ssl)
+
+Description: The TCP Single Client Access Name (SCAN) port for SSL. The default port is 2484.
+
+Type: `number`
+
+Default: `2484`
+
 ### <a name="input_tags"></a> [tags](#input\_tags)
 
 Description: (Optional) Tags of the resource.
@@ -560,7 +580,8 @@ Description: Resource ID of the ODAA VM Cluster
 
 ### <a name="output_vm_cluster_ocid"></a> [vm\_cluster\_ocid](#output\_vm\_cluster\_ocid)
 
-Description: n/a
+Description: Value of the OCID of the ODAA VM Cluster
+
 
 ## Modules
 

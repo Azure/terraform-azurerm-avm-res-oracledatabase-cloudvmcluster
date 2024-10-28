@@ -24,6 +24,9 @@ resource "azapi_resource" "odaa_vm_cluster" {
       "subnetId" : var.subnet_id,
       "backupSubnetCidr" : var.backup_subnet_cidr,
       "nsgCidrs" : var.nsg_cidrs,
+
+      "scanListenerPortTcpSsl" : var.scan_listener_port_tcp_ssl,
+      "scanListenerPortTcp" : var.scan_listener_port_tcp,
       "dataCollectionOptions" : {
         "isDiagnosticsEventsEnabled" : var.is_diagnostic_events_enabled,
         "isHealthMonitoringEnabled" : var.is_health_monitoring_enabled,

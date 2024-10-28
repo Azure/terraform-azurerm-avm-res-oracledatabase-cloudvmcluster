@@ -417,3 +417,15 @@ variable "time_zone" {
   default     = "UTC"
   description = "The time zone of the cluster."
 }
+
+variable "scan_listener_port_tcp" {
+  type        = number
+  default     = 1521
+  description = "The TCP Single Client Access Name (SCAN) port. The default port is 1521."
+}
+
+variable "scan_listener_port_tcp_ssl" {
+  type        = number
+  default     = 2484
+  description = "The TCP Single Client Access Name (SCAN) port for SSL. The default port is 2484."
+}

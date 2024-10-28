@@ -81,12 +81,15 @@ module "oracle_vm_cluster" {
 | `scan_listener_port_tcp_ssl`                           | number        | 2484                | The TCP Single Client Access Name (SCAN) port for SSL. The default port is 2484.                                                                        |
 This table includes all relevant variables.
 
+This table includes all relevant variables.
+
 ## Outputs
 
 | Name            | Description                                |
 |-----------------|--------------------------------------------|
-| `vm_cluster_id` | The ID of the deployed Oracle VM cluster   |
-| `public_ip`     | The public IP address of the VM cluster    |
+| `resource` | This is the full output for the resource.   |
+| `resource_id`     | Resource ID of the ODAA VM Cluster    |
+| `vm_cluster_ocid` | Value of the OCID of the ODAA VM Cluster |
 
 ## License
 
@@ -531,6 +534,22 @@ map(object({
 
 Default: `{}`
 
+### <a name="input_scan_listener_port_tcp"></a> [scan\_listener\_port\_tcp](#input\_scan\_listener\_port\_tcp)
+
+Description: The TCP Single Client Access Name (SCAN) port. The default port is 1521.
+
+Type: `number`
+
+Default: `1521`
+
+### <a name="input_scan_listener_port_tcp_ssl"></a> [scan\_listener\_port\_tcp\_ssl](#input\_scan\_listener\_port\_tcp\_ssl)
+
+Description: The TCP Single Client Access Name (SCAN) port for SSL. The default port is 2484.
+
+Type: `number`
+
+Default: `2484`
+
 ### <a name="input_tags"></a> [tags](#input\_tags)
 
 Description: (Optional) Tags of the resource.
@@ -547,22 +566,6 @@ Type: `string`
 
 Default: `"UTC"`
 
-### <a name="scan_listener_port_tcp_ssl"></a> [scan\_listener\_port\_tcp\_ssl](#input\_scan\_listener\_port\_tcp\_ssl)
-
-Description: The TCP Single Client Access Name (SCAN) port. The default port is 2484.
-
-Type: `number`
-
-Default: `2484`
-
-### <a name="scan_listener_port_tcp"></a> [scan\_listener\_port\_tcp](#input\_scan\_listener\_port\_tcp)
-
-Description: The TCP Single Client Access Name (SCAN) port. The default port is 1521.
-
-Type: `number`
-
-Default: `1521`
-
 ## Outputs
 
 The following outputs are exported:
@@ -574,6 +577,10 @@ Description: This is the full output for the resource.
 ### <a name="output_resource_id"></a> [resource\_id](#output\_resource\_id)
 
 Description: Resource ID of the ODAA VM Cluster
+
+### <a name="output_vm_cluster_ocid"></a> [vm\_cluster\_ocid](#output\_vm\_cluster\_ocid)
+
+Description: Value of the OCID of the ODAA VM Cluster
 
 ## Modules
 

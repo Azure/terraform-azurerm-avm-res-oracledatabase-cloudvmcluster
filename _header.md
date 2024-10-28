@@ -76,6 +76,9 @@ module "oracle_vm_cluster" {
 | `role_assignments`                    | map(object)   | {}                   | Role assignments configuration for the cluster.                                                  |
 | `tags`                                | map(string)   | null                 | Optional tags for the resource.                                                                  |
 | `time_zone`                           | string        | "UTC"                | Time zone of the cluster.                                                                        |
+| `scan_listener_port_tcp`                           | number        | 1521                | The TCP Single Client Access Name (SCAN) port. The default port is 1521.                                                                        |
+| `scan_listener_port_tcp_ssl`                           | number        | 2484                | The TCP Single Client Access Name (SCAN) port for SSL. The default port is 2484.                                                                        |
+This table includes all relevant variables.
 
 This table includes all relevant variables.
 
@@ -83,8 +86,9 @@ This table includes all relevant variables.
 
 | Name            | Description                                |
 |-----------------|--------------------------------------------|
-| `vm_cluster_id` | The ID of the deployed Oracle VM cluster   |
-| `public_ip`     | The public IP address of the VM cluster    |
+| `resource` | This is the full output for the resource.   |
+| `resource_id`     | Resource ID of the ODAA VM Cluster    |
+| `vm_cluster_ocid` | Value of the OCID of the ODAA VM Cluster |
 
 ## License
 

@@ -9,3 +9,7 @@ output "resource_id" {
   description = "Resource ID of the ODAA VM Cluster"
   value       = azapi_resource.odaa_vm_cluster.id
 }
+
+output "vm_cluster_ocid" {
+  value = azapi_resource.odaa_vm_cluster.output.properties.ocid
+}

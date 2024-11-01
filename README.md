@@ -24,7 +24,7 @@ This repository contains a Terraform module for deploying Oracle Database Cloud 
 An example of using the module in a Terraform configuration:
 
 ```hcl
-module "avm_exadata_vmc" {
+module "oracle_vm_cluster" {
   # Terraform Registry
   source  = "Azure/avm-res-oracledatabase-cloudvmcluster/azurerm" 
   version = "0.1.1"

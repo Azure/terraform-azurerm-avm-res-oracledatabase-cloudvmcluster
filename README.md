@@ -26,11 +26,11 @@ An example of using the module in a Terraform configuration:
 ```hcl
 module "oracle_vm_cluster" {
   # Terraform Registry
-  source  = "Azure/avm-res-oracledatabase-cloudvmcluster/azurerm" 
-  version = "0.1.1"
+  source  = "Azure/avm-res-oracledatabase-cloudvmcluster/azurerm"
+  version = "0.1.3"
 
   # Github  
-  # source  = "github.com/Azure/terraform-azurerm-avm-res-oracledatabase-cloudvmcluster" 
+  # source  = "github.com/Azure/terraform-azurerm-avm-res-oracledatabase-cloudvmcluster"
 
   # Configure the Cloud Infrastructure resource for the cluster
   cloud_exadata_infrastructure_id = "/subscriptions/{subscriptions_id}/resourceGroups/{resource_groups_name}/providers/Oracle.Database/cloudExadataInfrastructures/{cloudExadataInfrastructures_name}"

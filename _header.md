@@ -24,17 +24,36 @@ An example of using the module in a Terraform configuration:
 
 ```hcl
 module "oracle_vm_cluster" {
-  source = "github.com/sihbher/avm-res-oracledatabase-cloudvmcluster"
+  # Terraform Registry
+  source  = "Azure/avm-res-oracledatabase-cloudvmcluster/azurerm"
+  version = "0.1.3"
 
-  resource_group_name = "example-resource-group"
-  location            = "eastus"
-  vm_cluster_name     = "example-vm-cluster"
+  # Github  
+  # source  = "github.com/Azure/terraform-azurerm-avm-res-oracledatabase-cloudvmcluster" 
 
-  db_version = "19c"
-  vm_size    = "Standard_D8s_v3"
-  node_count = 2
+  # Configure the Cloud Infrastructure resource for the cluster
+  cloud_exadata_infrastructure_id = "/subscriptions/{subscriptions_id}/resourceGroups/{resource_groups_name}/providers/Oracle.Database/cloudExadataInfrastructures/{cloudExadataInfrastructures_name}"
 
-  subnet_id = "/subscriptions/{subscription_id}/resourceGroups/{resource_group_name}/providers/Microsoft.Network/virtualNetworks/{vnet_name}/subnets/{subnet_name}"
+  # Fundamentals
+  cluster_name      = "example-vm-cluster-name"
+  location          = "eastus"
+  hostname          = "example-vm-cluster-hostnameprefix"
+  resource_group_id = "example-resource-group"
+  ssh_public_keys   = "example_ssh_public_keys"
+
+  # Virtual network settings
+  vnet_id            = "/subscriptions/{subscription_id}/resourceGroups/{resource_group_name}/providers/Microsoft.Network/virtualNetworks/{vnet_name}"
+  subnet_id          = "/subscriptions/{subscription_id}/resourceGroups/{resource_group_name}/providers/Microsoft.Network/virtualNetworks/{vnet_name}/subnets/{subnet_name}"
+  backup_subnet_cidr = "172.17.5.0/24"
+
+  # Compute configuration settings
+  cpu_core_count     = 4
+  memory_size_in_gbs = 60
+
+  # Storage configuration
+  data_storage_percentage    = 80
+  data_storage_size_in_tbs   = 2
+  dbnode_storage_size_in_gbs = 120
 }
 ```
 

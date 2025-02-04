@@ -194,17 +194,6 @@ variable "gi_version" {
   }
 }
 
-variable "system_version" {
-  type        = string
-  default     = "24.1.8.0.0.250130"
-  description = "Operating system version of the image."
-
-  validation {
-    condition     = can(regex("^(\\d+\\.){5}\\d{6}$", var.system_version))
-    error_message = "The system version must be in the format 'XX.XX.XX.XX.XX.XXXXXX'."
-  }
-}
-
 variable "is_diagnostic_events_enabled" {
   type        = bool
   default     = false
@@ -426,6 +415,17 @@ variable "scan_listener_port_tcp_ssl" {
   type        = number
   default     = 2484
   description = "The TCP Single Client Access Name (SCAN) port for SSL. The default port is 2484."
+}
+
+variable "system_version" {
+  type        = string
+  default     = "24.1.8.0.0.250130"
+  description = "Operating system version of the image."
+
+  validation {
+    condition     = can(regex("^(\\d+\\.){5}\\d{6}$", var.system_version))
+    error_message = "The system version must be in the format 'XX.XX.XX.XX.XX.XXXXXX'."
+  }
 }
 
 # tflint-ignore: terraform_unused_declarations

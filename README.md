@@ -82,7 +82,6 @@ module "oracle_vm_cluster" {
 | `domain`                              | string        | null                 | The domain of the cluster.                                                                       |
 | `enable_telemetry`                    | bool          | true                 | Controls telemetry collection.                                                                   |
 | `gi_version`                          | string        | "19.0.0.0"           | The GI version of the cluster, must be in format `XX.XX.XX.XX`.                                  |
-| `system_version`                      | string        | "24.1.8.0.0.250130"  | The system version must be in the format `XX.XX.XX.XX.XX.XXXXXX`.                                |
 | `is_diagnostic_events_enabled`        | bool          | false                | Whether diagnostic events are enabled.                                                           |
 | `is_health_monitoring_enabled`        | bool          | false                | Whether health monitoring is enabled.                                                            |
 | `is_incident_logs_enabled`            | bool          | false                | Whether incident logs are enabled.                                                               |
@@ -99,7 +98,7 @@ module "oracle_vm_cluster" {
 | `time_zone`                           | string        | "UTC"                | Time zone of the cluster.                                                                        |
 | `scan_listener_port_tcp`                           | number        | 1521                | The TCP Single Client Access Name (SCAN) port. The default port is 1521.                                                                        |
 | `scan_listener_port_tcp_ssl`                           | number        | 2484                | The TCP Single Client Access Name (SCAN) port for SSL. The default port is 2484.                                                                        |
-This table includes all relevant variables.
+| `system_version`                      | string        | "24.1.8.0.0.250130"  | The system version must be in the format `XX.XX.XX.XX.XX.XXXXXX`.                                |
 
 This table includes all relevant variables.
 
@@ -569,6 +568,14 @@ Description: The TCP Single Client Access Name (SCAN) port for SSL. The default 
 Type: `number`
 
 Default: `2484`
+
+### <a name="input_system_version"></a> [system\_version](#input\_system\_version)
+
+Description: Operating system version of the image.
+
+Type: `string`
+
+Default: `"24.1.8.0.0.250130"`
 
 ### <a name="input_tags"></a> [tags](#input\_tags)
 

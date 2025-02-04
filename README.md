@@ -82,6 +82,7 @@ module "oracle_vm_cluster" {
 | `domain`                              | string        | null                 | The domain of the cluster.                                                                       |
 | `enable_telemetry`                    | bool          | true                 | Controls telemetry collection.                                                                   |
 | `gi_version`                          | string        | "19.0.0.0"           | The GI version of the cluster, must be in format `XX.XX.XX.XX`.                                  |
+| `system_version`                      | string        | "24.1.8.0.0.250130"  | The system version must be in the format `XX.XX.XX.XX.XX.XXXXXX`.                                |
 | `is_diagnostic_events_enabled`        | bool          | false                | Whether diagnostic events are enabled.                                                           |
 | `is_health_monitoring_enabled`        | bool          | false                | Whether health monitoring is enabled.                                                            |
 | `is_incident_logs_enabled`            | bool          | false                | Whether incident logs are enabled.                                                               |

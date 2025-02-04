@@ -21,6 +21,8 @@ resource "azapi_resource" "odaa_vm_cluster" {
       "licenseModel" : var.license_model,
       "vnetId" : var.vnet_id,
       "giVersion" : var.gi_version,
+      "systemVersion" : var.system_version,
+
       "subnetId" : var.subnet_id,
       "backupSubnetCidr" : var.backup_subnet_cidr,
       "nsgCidrs" : var.nsg_cidrs,

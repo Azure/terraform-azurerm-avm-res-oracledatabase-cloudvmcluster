@@ -98,7 +98,7 @@ module "oracle_vm_cluster" {
 | `time_zone`                           | string        | "UTC"                | Time zone of the cluster.                                                                        |
 | `scan_listener_port_tcp`                           | number        | 1521                | The TCP Single Client Access Name (SCAN) port. The default port is 1521.                                                                        |
 | `scan_listener_port_tcp_ssl`                           | number        | 2484                | The TCP Single Client Access Name (SCAN) port for SSL. The default port is 2484.                                                                        |
-This table includes all relevant variables.
+| `system_version`                      | string        | "24.1.8.0.0.250130"  | The system version must be in the format `XX.XX.XX.XX.XX.XXXXXX`.                                |
 
 This table includes all relevant variables.
 
@@ -568,6 +568,14 @@ Description: The TCP Single Client Access Name (SCAN) port for SSL. The default 
 Type: `number`
 
 Default: `2484`
+
+### <a name="input_system_version"></a> [system\_version](#input\_system\_version)
+
+Description: Operating system version of the image.
+
+Type: `string`
+
+Default: `"24.1.8.0.0.250130"`
 
 ### <a name="input_tags"></a> [tags](#input\_tags)
 

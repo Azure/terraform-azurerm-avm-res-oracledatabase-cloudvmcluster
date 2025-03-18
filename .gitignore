@@ -56,3 +56,4 @@ id_dsa
 *.key
 
 **/az/*
+examples/*/policy

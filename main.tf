@@ -2,7 +2,9 @@
 # OperationId: CloudVmClusters_CreateOrUpdate, CloudVmClusters_Get, CloudVmClusters_Delete
 # PUT GET DELETE /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Oracle.Database/cloudVmClusters/{cloudvmclustername}
 resource "azapi_resource" "odaa_vm_cluster" {
-  type = "Oracle.Database/cloudVmClusters@2023-09-01"
+  name      = var.cluster_name
+  parent_id = var.resource_group_id
+  type      = "Oracle.Database/cloudVmClusters@2023-09-01"
   body = {
     "location" : var.location,
     "properties" : {
@@ -39,8 +41,6 @@ resource "azapi_resource" "odaa_vm_cluster" {
     }
 
   }
-  name                      = var.cluster_name
-  parent_id                 = var.resource_group_id
   response_export_values    = ["properties.ocid"]
   schema_validation_enabled = false
 

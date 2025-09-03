@@ -464,3 +464,14 @@ variable "zoneId" {
   default = null
   description = "The OCID of the zone the cloud VM cluster is associated with."
 }
+
+variable "fileSystemConfigurationDetails" {
+  description = "Array of mount path and size."
+  default = null
+  type = list(
+    object({
+      fileSystemSizeGb = number
+      mountPoint = string
+      })
+  )
+}

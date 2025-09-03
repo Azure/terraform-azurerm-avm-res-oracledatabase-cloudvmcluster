@@ -10,7 +10,6 @@ resource "azapi_resource" "odaa_vm_cluster" {
   tags = var.tags
 
   body = {
-    "location" : var.location,
     "properties" : {
       "dataStorageSizeInTbs" : var.data_storage_size_in_tbs,
       "dbNodeStorageSizeInGbs" : var.dbnode_storage_size_in_gbs,

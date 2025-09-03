@@ -420,11 +420,11 @@ variable "scan_listener_port_tcp_ssl" {
 
 variable "system_version" {
   type        = string
-  default     = "24.1.8.0.0.250130"
+  default     = null
   description = "Operating system version of the image."
 
   validation {
-    condition     = can(regex("^(\\d+\\.){5}\\d{6}$", var.system_version))
+    condition     = can(regex("^(\\d+\\.){5}\\d{6}$", var.system_version)) || var.system_version == null
     error_message = "The system version must be in the format 'XX.XX.XX.XX.XX.XXXXXX'."
   }
 }

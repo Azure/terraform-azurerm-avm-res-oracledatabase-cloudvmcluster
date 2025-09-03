@@ -1,6 +1,7 @@
 variable "backup_subnet_cidr" {
   type        = string
   description = "The backup subnet CIDR of the cluster."
+  default = null
 
   validation {
     condition     = can(regex("^(\\d+\\.){3}\\d+\\/\\d+$", var.backup_subnet_cidr))

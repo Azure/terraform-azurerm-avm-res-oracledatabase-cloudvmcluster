@@ -4,7 +4,7 @@ variable "backup_subnet_cidr" {
   default = null
 
   validation {
-    condition     = can(regex("^(\\d+\\.){3}\\d+\\/\\d+$", var.backup_subnet_cidr))
+    condition     = can(regex("^(\\d+\\.){3}\\d+\\/\\d+$", var.backup_subnet_cidr)) || var.backup_subnet_cidr == null
     error_message = "The backup subnet CIDR must be in the format 'XXX.XXX.XXX.XXX/XX'."
   }
 }

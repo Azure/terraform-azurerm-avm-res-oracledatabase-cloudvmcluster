@@ -83,7 +83,7 @@ module "oracle_vm_cluster" {
 | `diagnostic_settings`                 | map(object)   | {}                   | Diagnostic settings configuration for logs and metrics.                                          |
 | `domain`                              | string        | null                 | The domain of the cluster.                                                                       |
 | `enable_telemetry`                    | bool          | true                 | Controls telemetry collection.                                                                   |
-| `fileSystemConfigurationDetails`      | string        | null               | Array of mount path and size.|
+| `fileSystemConfigurationDetails`      | list(object) | null               | Array of mount path and size.|
 | `gi_version`                          | string        | "19.0.0.0"           | The GI version of the cluster, must be in format `XX.XX.XX.XX`.                                  |
 | `is_diagnostic_events_enabled`        | bool          | false                | Whether diagnostic events are enabled.                                                           |
 | `is_health_monitoring_enabled`        | bool          | false                | Whether health monitoring is enabled.                                                            |

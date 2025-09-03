@@ -4,7 +4,11 @@
 resource "azapi_resource" "odaa_vm_cluster" {
   name      = var.cluster_name
   parent_id = var.resource_group_id
-  type      = "Oracle.Database/cloudVmClusters@2023-09-01"
+  type      = "Oracle.Database/cloudVmClusters@2025-03-01"
+  location  = var.location
+
+  tags = var.tags
+
   body = {
     "location" : var.location,
     "properties" : {
@@ -37,16 +41,24 @@ resource "azapi_resource" "odaa_vm_cluster" {
         "isIncidentLogsEnabled" : var.is_incident_logs_enabled
       },
       "displayName" : var.cluster_name,
-      "dbServers" : local.db_servers_ocids
+      "dbServers" : local.db_servers_ocids,
+
+      "clusterName" : var.cluster_name,
+      "ocpuCount" : var.ocpuCount,
+      "storageSizeInGbs" : var.storageSizeInGbs,
+      "zoneId" : var.zoneId
     }
 
   }
-  create_headers            = var.enable_telemetry ? { "User-Agent" : local.avm_azapi_header } : null
-  delete_headers            = var.enable_telemetry ? { "User-Agent" : local.avm_azapi_header } : null
-  read_headers              = var.enable_telemetry ? { "User-Agent" : local.avm_azapi_header } : null
+  create_headers = var.enable_telemetry ? { "User-Agent" : local.avm_azapi_header } : null
+  read_headers   = var.enable_telemetry ? { "User-Agent" : local.avm_azapi_header } : null
+  update_headers = var.enable_telemetry ? { "User-Agent" : local.avm_azapi_header } : null
+  delete_headers = var.enable_telemetry ? { "User-Agent" : local.avm_azapi_header } : null
+
   response_export_values    = ["properties.ocid"]
-  schema_validation_enabled = false
-  update_headers            = var.enable_telemetry ? { "User-Agent" : local.avm_azapi_header } : null
+  schema_validation_enabled = true
+  ignore_null_property   = true
+
 
   timeouts {
     create = "24h"

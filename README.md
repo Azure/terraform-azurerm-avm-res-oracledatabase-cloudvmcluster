@@ -28,7 +28,7 @@ An example of using the module in a Terraform configuration:
 module "oracle_vm_cluster" {
   # Terraform Registry
   source  = "Azure/avm-res-oracledatabase-cloudvmcluster/azurerm"
-  version = "0.1.3"
+  version = "0.1.5"
 
   # Github  
   # source  = "github.com/Azure/terraform-azurerm-avm-res-oracledatabase-cloudvmcluster"
@@ -37,19 +37,20 @@ module "oracle_vm_cluster" {
   cloud_exadata_infrastructure_id = "/subscriptions/{subscriptions_id}/resourceGroups/{resource_groups_name}/providers/Oracle.Database/cloudExadataInfrastructures/{cloudExadataInfrastructures_name}"
 
   # Fundamentals
-  cluster_name      = "example-vm-cluster-name"
+  cluster_name      = "demo-vmc01"
   location          = "eastus"
-  hostname          = "example-vm-cluster-hostnameprefix"
-  resource_group_id = "example-resource-group"
-  ssh_public_keys   = "example_ssh_public_keys"
+  hostname          = "vmc"
+  resource_group_id = "/subscriptions/{subscriptions_id}/resourceGroups/{resource_group_name}"
+  ssh_public_keys   = [
+    file("your_ssh_public_key_path")
+  ]
 
   # Virtual network settings
   vnet_id            = "/subscriptions/{subscription_id}/resourceGroups/{resource_group_name}/providers/Microsoft.Network/virtualNetworks/{vnet_name}"
   subnet_id          = "/subscriptions/{subscription_id}/resourceGroups/{resource_group_name}/providers/Microsoft.Network/virtualNetworks/{vnet_name}/subnets/{subnet_name}"
-  backup_subnet_cidr = "172.17.5.0/24"
 
   # Compute configuration settings
-  cpu_core_count     = 4
+  cpu_core_count     = 16
   memory_size_in_gbs = 60
 
   # Storage configuration
@@ -82,6 +83,7 @@ module "oracle_vm_cluster" {
 | `diagnostic_settings`                 | map(object)   | {}                   | Diagnostic settings configuration for logs and metrics.                                          |
 | `domain`                              | string        | null                 | The domain of the cluster.                                                                       |
 | `enable_telemetry`                    | bool          | true                 | Controls telemetry collection.                                                                   |
+| `fileSystemConfigurationDetails`      | string        | null               | Array of mount path and size.|
 | `gi_version`                          | string        | "19.0.0.0"           | The GI version of the cluster, must be in format `XX.XX.XX.XX`.                                  |
 | `is_diagnostic_events_enabled`        | bool          | false                | Whether diagnostic events are enabled.                                                           |
 | `is_health_monitoring_enabled`        | bool          | false                | Whether health monitoring is enabled.                                                            |

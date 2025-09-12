@@ -92,7 +92,7 @@ module "exadbInfra" {
   shape         = "Exadata.X11M"
 
   # maintenance_window
-  customerContacts = local.customerContacts
+  customer_contacts = local.customerContacts
 
   maintenance_window_leadtime_in_weeks = 2
   maintenance_window_patching_mode     = "NonRolling"
@@ -106,14 +106,14 @@ module "exadbInfra" {
     }, {
     name = "January"
   }]
-  maintenance_window_weeksOfMonth = [1]
-  maintenance_window_daysOfWeek = [{
+  maintenance_window_weeks_of_month = [1]
+  maintenance_window_days_of_week = [{
     name = "Monday"
   }]
-  maintenance_window_hoursOfDay = [12]
+  maintenance_window_hours_of_day = [12]
 
-  customActionTimeoutInMins    = 0
-  isCustomActionTimeoutEnabled = false
+  custom_action_timeout_in_mins    = 0
+  is_custom_action_timeout_enabled = false
 
   # Azure resource management
   tags = local.tags
@@ -153,7 +153,7 @@ module "exadbVmc" {
   dbnode_storage_size_in_gbs = 120
 
   # Local file systems configuration
-  fileSystemConfigurationDetails = [{
+  file_system_configuration_details = [{
     fileSystemSizeGb = 15
     mountPoint       = "/"
     }, {

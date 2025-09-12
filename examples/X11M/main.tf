@@ -94,26 +94,27 @@ module "exadbInfra" {
   # maintenance_window
   customer_contacts = local.customerContacts
 
-  maintenance_window_leadtime_in_weeks = 2
+  # maintenance_window_leadtime_in_weeks = 2
   maintenance_window_patching_mode     = "NonRolling"
-  maintenance_window_preference        = "CustomPreference"
-  maintenance_window_months = [{
-    name = "February"
-    }, {
-    name = "May"
-    }, {
-    name = "August"
-    }, {
-    name = "January"
-  }]
-  maintenance_window_weeks_of_month = [1]
-  maintenance_window_days_of_week = [{
-    name = "Monday"
-  }]
-  maintenance_window_hours_of_day = [12]
+  maintenance_window_preference        = "NoPreference"
+  # maintenance_window_preference        = "CustomPreference"
+  # maintenance_window_months = [{
+  #   name = "February"
+  #   }, {
+  #   name = "May"
+  #   }, {
+  #   name = "August"
+  #   }, {
+  #   name = "January"
+  # }]
+  # maintenance_window_weeks_of_month = [1]
+  # maintenance_window_days_of_week = [{
+  #   name = "Monday"
+  # }]
+  # maintenance_window_hours_of_day = [12]
 
-  custom_action_timeout_in_mins    = 0
-  is_custom_action_timeout_enabled = false
+  # custom_action_timeout_in_mins    = 0
+  # is_custom_action_timeout_enabled = false
 
   # Azure resource management
   tags = local.tags
@@ -141,46 +142,39 @@ module "exadbVmc" {
   # Virtual network settings
   vnet_id            = local.vnet_id
   subnet_id          = local.subnet_id
-  backup_subnet_cidr = "192.168.252.0/22"
+  # backup_subnet_cidr = "192.168.252.0/22"
 
   # Compute configuration settings
   cpu_core_count     = 16
   memory_size_in_gbs = 60
+  # ocpu_count         = 4
 
   # Storage configuration
   data_storage_percentage    = 80
   data_storage_size_in_tbs   = 2
   dbnode_storage_size_in_gbs = 120
+  # storage_size_in_gbs        = 245760
 
   # Local file systems configuration
-  file_system_configuration_details = [{
-    fileSystemSizeGb = 15
-    mountPoint       = "/"
-    }, {
-    fileSystemSizeGb = 250
-    mountPoint       = "/u01"
-    }, {
-    fileSystemSizeGb = 10
-    mountPoint       = "/tmp"
-    }, {
-    fileSystemSizeGb = 10
-    mountPoint       = "/var"
-    }, {
-    fileSystemSizeGb = 30
-    mountPoint       = "/var/log"
-    }, {
-    fileSystemSizeGb = 4
-    mountPoint       = "/home"
-    }, {
-    fileSystemSizeGb = 10
-    mountPoint       = "/var/log/audit"
-    }, {
-    fileSystemSizeGb = 9
-    mountPoint       = "reserved"
-    }, {
-    fileSystemSizeGb = 16
-    mountPoint       = "swap"
-  }]
+  # file_system_configuration_details = [{
+  #   fileSystemSizeGb = 15
+  #   mountPoint       = "/"
+  #   }, {
+  #   fileSystemSizeGb = 250
+  #   mountPoint       = "/u01"
+  #   }, {
+  #   fileSystemSizeGb = 10
+  #   mountPoint       = "/tmp"
+  #   }, {
+  #   fileSystemSizeGb = 10
+  #   mountPoint       = "/var"
+  #   }, {
+  #   fileSystemSizeGb = 30
+  #   mountPoint       = "/var/log"
+  #   }, {
+  #   fileSystemSizeGb = 4
+  #   mountPoint       = "/home"
+  #   }]
 
   # Azure resource management
   tags             = local.tags

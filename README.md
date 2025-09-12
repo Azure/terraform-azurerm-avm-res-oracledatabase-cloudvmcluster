@@ -94,6 +94,7 @@ module "oracle_vm_cluster" {
 | `lock`                                | object        | null                 | Resource lock configuration for the cluster.                                                     |
 | `managed_identities`                  | object        | {}                   | Managed identity configuration (system and user-assigned identities).                            |
 | `nsg_cidrs`                           | set(object)   | null                 | Additional network security group ingress rules for the cluster.                                 |
+| `ocpu_count` | number        | null | The number of OCPU cores to enable on the cloud VM cluster.|
 | `private_endpoints`                   | map(object)   | {}                   | Private endpoints configuration for the cluster.                                                 |
 | `private_endpoints_manage_dns_zone_group`| bool        | true                 | Controls whether DNS zone groups are managed by this module.                                     |
 | `role_assignments`                    | map(object)   | {}                   | Role assignments configuration for the cluster.                                                  |
@@ -101,7 +102,8 @@ module "oracle_vm_cluster" {
 | `time_zone`                           | string        | "UTC"                | Time zone of the cluster.                                                                        |
 | `scan_listener_port_tcp`                           | number        | 1521                | The TCP Single Client Access Name (SCAN) port. The default port is 1521.                                                                        |
 | `scan_listener_port_tcp_ssl`                           | number        | 2484                | The TCP Single Client Access Name (SCAN) port for SSL. The default port is 2484.                                                                        |
-This table includes all relevant variables.
+| `storage_size_in_gbs`                           | number        | null                | The local node storage to be allocated in GBs.                                                                            |
+| `zone_id`                           | string        | null                | The OCID of the zone the cloud VM cluster is associated with.                                                                        |
 
 This table includes all relevant variables.
 

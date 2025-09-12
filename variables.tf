@@ -16,7 +16,7 @@ variable "cloud_exadata_infrastructure_id" {
 
 variable "cluster_name" {
   type        = string
-  description = "The name of the the VM Cluster."
+  description = "The cluster name for cloud VM cluster. The cluster name must begin with an alphabetic character, and may contain hyphens (-). Underscores (_) are not permitted. The cluster name can be no longer than 11 characters and is not case sensitive."
 
   validation {
     condition     = can(regex("^[a-z0-9-]{3,11}$", var.cluster_name))
@@ -442,31 +442,25 @@ variable "time_zone" {
   description = "The time zone of the cluster."
 }
 
-variable "clusterName" {
-  type = string
-  default = null
-  description = "The cluster name for cloud VM cluster. The cluster name must begin with an alphabetic character, and may contain hyphens (-). Underscores (_) are not permitted. The cluster name can be no longer than 11 characters and is not case sensitive."
-}
-
-variable "ocpuCount" {
+variable "ocpu_count" {
   type = number
   default = null
   description = "The number of OCPU cores to enable on the cloud VM cluster. Only 1 decimal place is allowed for the fractional part."
 }
 
-variable "storageSizeInGbs" {
+variable "storage_size_in_gbs" {
   type = number
   default = null
   description = "The local node storage to be allocated in GBs."
 }
 
-variable "zoneId" {
+variable "zone_id" {
   type = string
   default = null
   description = "The OCID of the zone the cloud VM cluster is associated with."
 }
 
-variable "fileSystemConfigurationDetails" {
+variable "file_system_configuration_details" {
   description = "Array of mount path and size."
   default = null
   type = list(

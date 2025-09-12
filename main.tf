@@ -41,11 +41,12 @@ resource "azapi_resource" "odaa_vm_cluster" {
       },
       "displayName" : var.cluster_name,
       "dbServers" : local.db_servers_ocids,
+      "fileSystemConfigurationDetails" : var.file_system_configuration_details
 
       "clusterName" : var.cluster_name,
-      "ocpuCount" : var.ocpuCount,
-      "storageSizeInGbs" : var.storageSizeInGbs,
-      "zoneId" : var.zoneId
+      "ocpuCount" : var.ocpu_count,
+      "storageSizeInGbs" : var.storage_size_in_gbs,
+      "zoneId" : var.zone_id
     }
 
   }

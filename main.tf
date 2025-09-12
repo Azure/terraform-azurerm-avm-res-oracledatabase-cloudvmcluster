@@ -70,7 +70,8 @@ resource "azapi_resource" "odaa_vm_cluster" {
       body.properties.giVersion,
       body.properties.hostname,
       body.properties.sshPublicKeys,
-      body.properties.fileSystemConfigurationDetails
+      body.properties.fileSystemConfigurationDetails,
+      body.properties.ocpuCount
     ]
   }
 }

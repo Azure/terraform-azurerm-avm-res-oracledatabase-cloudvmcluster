@@ -69,7 +69,8 @@ resource "azapi_resource" "odaa_vm_cluster" {
     ignore_changes = [
       body.properties.giVersion,
       body.properties.hostname,
-      body.properties.sshPublicKeys
+      body.properties.sshPublicKeys,
+      body.properties.fileSystemConfigurationDetails
     ]
   }
 }

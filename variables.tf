@@ -1,9 +1,10 @@
 variable "backup_subnet_cidr" {
   type        = string
   description = "The backup subnet CIDR of the cluster."
+  default = null
 
   validation {
-    condition     = can(regex("^(\\d+\\.){3}\\d+\\/\\d+$", var.backup_subnet_cidr))
+    condition     = can(regex("^(\\d+\\.){3}\\d+\\/\\d+$", var.backup_subnet_cidr)) || var.backup_subnet_cidr == null
     error_message = "The backup subnet CIDR must be in the format 'XXX.XXX.XXX.XXX/XX'."
   }
 }
@@ -15,7 +16,7 @@ variable "cloud_exadata_infrastructure_id" {
 
 variable "cluster_name" {
   type        = string
-  description = "The name of the the VM Cluster."
+  description = "The cluster name for cloud VM cluster. The cluster name must begin with an alphabetic character, and may contain hyphens (-). Underscores (_) are not permitted. The cluster name can be no longer than 11 characters and is not case sensitive."
 
   validation {
     condition     = can(regex("^[a-z0-9-]{3,11}$", var.cluster_name))
@@ -419,11 +420,11 @@ variable "scan_listener_port_tcp_ssl" {
 
 variable "system_version" {
   type        = string
-  default     = "24.1.8.0.0.250130"
+  default     = null
   description = "Operating system version of the image."
 
   validation {
-    condition     = can(regex("^(\\d+\\.){5}\\d{6}$", var.system_version))
+    condition     = can(regex("^(\\d+\\.){5}\\d{6}$", var.system_version)) || var.system_version == null
     error_message = "The system version must be in the format 'XX.XX.XX.XX.XX.XXXXXX'."
   }
 }
@@ -439,4 +440,33 @@ variable "time_zone" {
   type        = string
   default     = "UTC"
   description = "The time zone of the cluster."
+}
+
+variable "ocpu_count" {
+  type = number
+  default = null
+  description = "The number of OCPU cores to enable on the cloud VM cluster. Only 1 decimal place is allowed for the fractional part."
+}
+
+variable "storage_size_in_gbs" {
+  type = number
+  default = null
+  description = "The local node storage to be allocated in GBs."
+}
+
+variable "zone_id" {
+  type = string
+  default = null
+  description = "The OCID of the zone the cloud VM cluster is associated with."
+}
+
+variable "file_system_configuration_details" {
+  description = "Array of mount path and size."
+  default = null
+  type = list(
+    object({
+      fileSystemSizeGb = number
+      mountPoint = string
+      })
+  )
 }

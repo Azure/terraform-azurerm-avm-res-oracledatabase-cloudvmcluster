@@ -296,7 +296,6 @@ resource "time_sleep" "wait_5_min_after_deletion" {
 module "test_default" {
   source = "../../"
 
-  backup_subnet_cidr              = "172.17.5.0/24"
   cloud_exadata_infrastructure_id = module.avm_odaa_infra.resource_id
   cluster_name                    = "odaa-vmcl"
   cpu_core_count                  = 4
@@ -309,6 +308,7 @@ module "test_default" {
   ssh_public_keys                 = [tls_private_key.generated_ssh_key.public_key_openssh]
   subnet_id                       = module.odaa_vnet.subnets.snet-odaa.resource_id
   vnet_id                         = module.odaa_vnet.resource_id
+  backup_subnet_cidr              = "172.17.5.0/24"
   data_storage_percentage         = 80
   enable_telemetry                = local.enable_telemetry
   gi_version                      = "19.0.0.0"

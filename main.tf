@@ -2,13 +2,10 @@
 # OperationId: CloudVmClusters_CreateOrUpdate, CloudVmClusters_Get, CloudVmClusters_Delete
 # PUT GET DELETE /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Oracle.Database/cloudVmClusters/{cloudvmclustername}
 resource "azapi_resource" "odaa_vm_cluster" {
+  location  = var.location
   name      = var.cluster_name
   parent_id = var.resource_group_id
   type      = "Oracle.Database/cloudVmClusters@2025-03-01"
-  location  = var.location
-
-  tags = var.tags
-
   body = {
     "properties" : {
       "dataStorageSizeInTbs" : var.data_storage_size_in_tbs,
@@ -50,15 +47,14 @@ resource "azapi_resource" "odaa_vm_cluster" {
     }
 
   }
-  create_headers = var.enable_telemetry ? { "User-Agent" : local.avm_azapi_header } : null
-  read_headers   = var.enable_telemetry ? { "User-Agent" : local.avm_azapi_header } : null
-  update_headers = var.enable_telemetry ? { "User-Agent" : local.avm_azapi_header } : null
-  delete_headers = var.enable_telemetry ? { "User-Agent" : local.avm_azapi_header } : null
-
+  create_headers            = var.enable_telemetry ? { "User-Agent" : local.avm_azapi_header } : null
+  delete_headers            = var.enable_telemetry ? { "User-Agent" : local.avm_azapi_header } : null
+  ignore_null_property      = true
+  read_headers              = var.enable_telemetry ? { "User-Agent" : local.avm_azapi_header } : null
   response_export_values    = ["properties.ocid"]
   schema_validation_enabled = true
-  ignore_null_property   = true
-
+  tags                      = var.tags
+  update_headers            = var.enable_telemetry ? { "User-Agent" : local.avm_azapi_header } : null
 
   timeouts {
     create = "24h"

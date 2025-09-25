@@ -28,7 +28,7 @@ An example of using the module in a Terraform configuration:
 module "oracle_vm_cluster" {
   # Terraform Registry
   source  = "Azure/avm-res-oracledatabase-cloudvmcluster/azurerm"
-  version = "0.1.5"
+  version = "0.1.3"
 
   # Github  
   # source  = "github.com/Azure/terraform-azurerm-avm-res-oracledatabase-cloudvmcluster"
@@ -37,20 +37,19 @@ module "oracle_vm_cluster" {
   cloud_exadata_infrastructure_id = "/subscriptions/{subscriptions_id}/resourceGroups/{resource_groups_name}/providers/Oracle.Database/cloudExadataInfrastructures/{cloudExadataInfrastructures_name}"
 
   # Fundamentals
-  cluster_name      = "demo-vmc01"
+  cluster_name      = "example-vm-cluster-name"
   location          = "eastus"
-  hostname          = "vmc"
-  resource_group_id = "/subscriptions/{subscriptions_id}/resourceGroups/{resource_group_name}"
-  ssh_public_keys   = [
-    file("your_ssh_public_key_path")
-  ]
+  hostname          = "example-vm-cluster-hostnameprefix"
+  resource_group_id = "example-resource-group"
+  ssh_public_keys   = "example_ssh_public_keys"
 
   # Virtual network settings
   vnet_id            = "/subscriptions/{subscription_id}/resourceGroups/{resource_group_name}/providers/Microsoft.Network/virtualNetworks/{vnet_name}"
   subnet_id          = "/subscriptions/{subscription_id}/resourceGroups/{resource_group_name}/providers/Microsoft.Network/virtualNetworks/{vnet_name}/subnets/{subnet_name}"
+  backup_subnet_cidr = "172.17.5.0/24"
 
   # Compute configuration settings
-  cpu_core_count     = 16
+  cpu_core_count     = 4
   memory_size_in_gbs = 60
 
   # Storage configuration
@@ -83,7 +82,6 @@ module "oracle_vm_cluster" {
 | `diagnostic_settings`                 | map(object)   | {}                   | Diagnostic settings configuration for logs and metrics.                                          |
 | `domain`                              | string        | null                 | The domain of the cluster.                                                                       |
 | `enable_telemetry`                    | bool          | true                 | Controls telemetry collection.                                                                   |
-| `fileSystemConfigurationDetails`      | list(object) | null               | Array of mount path and size.|
 | `gi_version`                          | string        | "19.0.0.0"           | The GI version of the cluster, must be in format `XX.XX.XX.XX`.                                  |
 | `is_diagnostic_events_enabled`        | bool          | false                | Whether diagnostic events are enabled.                                                           |
 | `is_health_monitoring_enabled`        | bool          | false                | Whether health monitoring is enabled.                                                            |
@@ -94,7 +92,6 @@ module "oracle_vm_cluster" {
 | `lock`                                | object        | null                 | Resource lock configuration for the cluster.                                                     |
 | `managed_identities`                  | object        | {}                   | Managed identity configuration (system and user-assigned identities).                            |
 | `nsg_cidrs`                           | set(object)   | null                 | Additional network security group ingress rules for the cluster.                                 |
-| `ocpu_count` | number        | null | The number of OCPU cores to enable on the cloud VM cluster.|
 | `private_endpoints`                   | map(object)   | {}                   | Private endpoints configuration for the cluster.                                                 |
 | `private_endpoints_manage_dns_zone_group`| bool        | true                 | Controls whether DNS zone groups are managed by this module.                                     |
 | `role_assignments`                    | map(object)   | {}                   | Role assignments configuration for the cluster.                                                  |
@@ -102,8 +99,7 @@ module "oracle_vm_cluster" {
 | `time_zone`                           | string        | "UTC"                | Time zone of the cluster.                                                                        |
 | `scan_listener_port_tcp`                           | number        | 1521                | The TCP Single Client Access Name (SCAN) port. The default port is 1521.                                                                        |
 | `scan_listener_port_tcp_ssl`                           | number        | 2484                | The TCP Single Client Access Name (SCAN) port for SSL. The default port is 2484.                                                                        |
-| `storage_size_in_gbs`                           | number        | null                | The local node storage to be allocated in GBs.                                                                            |
-| `zone_id`                           | string        | null                | The OCID of the zone the cloud VM cluster is associated with.                                                                        |
+This table includes all relevant variables.
 
 This table includes all relevant variables.
 
@@ -154,12 +150,6 @@ The following resources are used by this module:
 
 The following input variables are required:
 
-### <a name="input_backup_subnet_cidr"></a> [backup\_subnet\_cidr](#input\_backup\_subnet\_cidr)
-
-Description: The backup subnet CIDR of the cluster.
-
-Type: `string`
-
 ### <a name="input_cloud_exadata_infrastructure_id"></a> [cloud\_exadata\_infrastructure\_id](#input\_cloud\_exadata\_infrastructure\_id)
 
 Description: The cloud Exadata infrastructure ID.
@@ -168,7 +158,7 @@ Type: `string`
 
 ### <a name="input_cluster_name"></a> [cluster\_name](#input\_cluster\_name)
 
-Description: The name of the the VM Cluster.
+Description: The cluster name for cloud VM cluster. The cluster name must begin with an alphabetic character, and may contain hyphens (-). Underscores (\_) are not permitted. The cluster name can be no longer than 11 characters and is not case sensitive.
 
 Type: `string`
 
@@ -235,6 +225,14 @@ Type: `string`
 ## Optional Inputs
 
 The following input variables are optional (have default values):
+
+### <a name="input_backup_subnet_cidr"></a> [backup\_subnet\_cidr](#input\_backup\_subnet\_cidr)
+
+Description: The backup subnet CIDR of the cluster.
+
+Type: `string`
+
+Default: `null`
 
 ### <a name="input_customer_managed_key"></a> [customer\_managed\_key](#input\_customer\_managed\_key)
 
@@ -327,6 +325,23 @@ If it is set to false, then no telemetry will be collected.
 Type: `bool`
 
 Default: `true`
+
+### <a name="input_file_system_configuration_details"></a> [file\_system\_configuration\_details](#input\_file\_system\_configuration\_details)
+
+Description: Array of mount path and size.
+
+Type:
+
+```hcl
+list(
+    object({
+      fileSystemSizeGb = number
+      mountPoint       = string
+    })
+  )
+```
+
+Default: `null`
 
 ### <a name="input_gi_version"></a> [gi\_version](#input\_gi\_version)
 
@@ -448,6 +463,14 @@ set(object({
     })
   }))
 ```
+
+Default: `null`
+
+### <a name="input_ocpu_count"></a> [ocpu\_count](#input\_ocpu\_count)
+
+Description: The number of OCPU cores to enable on the cloud VM cluster. Only 1 decimal place is allowed for the fractional part.
+
+Type: `number`
 
 Default: `null`
 
@@ -574,13 +597,21 @@ Type: `number`
 
 Default: `2484`
 
+### <a name="input_storage_size_in_gbs"></a> [storage\_size\_in\_gbs](#input\_storage\_size\_in\_gbs)
+
+Description: The local node storage to be allocated in GBs.
+
+Type: `number`
+
+Default: `null`
+
 ### <a name="input_system_version"></a> [system\_version](#input\_system\_version)
 
 Description: Operating system version of the image.
 
 Type: `string`
 
-Default: `"24.1.8.0.0.250130"`
+Default: `null`
 
 ### <a name="input_tags"></a> [tags](#input\_tags)
 
@@ -597,6 +628,14 @@ Description: The time zone of the cluster.
 Type: `string`
 
 Default: `"UTC"`
+
+### <a name="input_zone_id"></a> [zone\_id](#input\_zone\_id)
+
+Description: The OCID of the zone the cloud VM cluster is associated with.
+
+Type: `string`
+
+Default: `null`
 
 ## Outputs
 

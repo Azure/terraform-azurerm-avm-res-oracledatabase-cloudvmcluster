@@ -1,14 +1,3 @@
-variable "backup_subnet_cidr" {
-  type        = string
-  description = "The backup subnet CIDR of the cluster."
-  default = null
-
-  validation {
-    condition     = can(regex("^(\\d+\\.){3}\\d+\\/\\d+$", var.backup_subnet_cidr)) || var.backup_subnet_cidr == null
-    error_message = "The backup subnet CIDR must be in the format 'XXX.XXX.XXX.XXX/XX'."
-  }
-}
-
 variable "cloud_exadata_infrastructure_id" {
   type        = string
   description = "The cloud Exadata infrastructure ID."
@@ -79,6 +68,17 @@ variable "subnet_id" {
 variable "vnet_id" {
   type        = string
   description = "The VNet ID."
+}
+
+variable "backup_subnet_cidr" {
+  type        = string
+  default     = null
+  description = "The backup subnet CIDR of the cluster."
+
+  validation {
+    condition     = can(regex("^(\\d+\\.){3}\\d+\\/\\d+$", var.backup_subnet_cidr)) || var.backup_subnet_cidr == null
+    error_message = "The backup subnet CIDR must be in the format 'XXX.XXX.XXX.XXX/XX'."
+  }
 }
 
 # required AVM interfaces
@@ -182,6 +182,17 @@ For more information see <https://aka.ms/avm/telemetryinfo>.
 If it is set to false, then no telemetry will be collected.
 DESCRIPTION
   nullable    = false
+}
+
+variable "file_system_configuration_details" {
+  type = list(
+    object({
+      fileSystemSizeGb = number
+      mountPoint       = string
+    })
+  )
+  default     = null
+  description = "Array of mount path and size."
 }
 
 variable "gi_version" {
@@ -297,6 +308,12 @@ Add additional Network ingress rules for the network security group of the VM cl
        }
    }]  
 DESCRIPTION
+}
+
+variable "ocpu_count" {
+  type        = number
+  default     = null
+  description = "The number of OCPU cores to enable on the cloud VM cluster. Only 1 decimal place is allowed for the fractional part."
 }
 
 # tflint-ignore: terraform_unused_declarations
@@ -418,6 +435,12 @@ variable "scan_listener_port_tcp_ssl" {
   description = "The TCP Single Client Access Name (SCAN) port for SSL. The default port is 2484."
 }
 
+variable "storage_size_in_gbs" {
+  type        = number
+  default     = null
+  description = "The local node storage to be allocated in GBs."
+}
+
 variable "system_version" {
   type        = string
   default     = null
@@ -442,31 +465,8 @@ variable "time_zone" {
   description = "The time zone of the cluster."
 }
 
-variable "ocpu_count" {
-  type = number
-  default = null
-  description = "The number of OCPU cores to enable on the cloud VM cluster. Only 1 decimal place is allowed for the fractional part."
-}
-
-variable "storage_size_in_gbs" {
-  type = number
-  default = null
-  description = "The local node storage to be allocated in GBs."
-}
-
 variable "zone_id" {
-  type = string
-  default = null
+  type        = string
+  default     = null
   description = "The OCID of the zone the cloud VM cluster is associated with."
-}
-
-variable "file_system_configuration_details" {
-  description = "Array of mount path and size."
-  default = null
-  type = list(
-    object({
-      fileSystemSizeGb = number
-      mountPoint = string
-      })
-  )
 }

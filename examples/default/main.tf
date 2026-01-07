@@ -1,13 +1,14 @@
 terraform {
   required_version = ">= 1.9, < 2.0"
+
   required_providers {
     azapi = {
-      source  = "azure/azapi"
-      version = "~> 1.14.0"
+      source  = "Azure/azapi"
+      version = "~> 2.0"
     }
     azurerm = {
       source  = "hashicorp/azurerm"
-      version = "~> 3.116.0"
+      version = "~> 4.0"
     }
     local = {
       source  = "hashicorp/local"
@@ -49,7 +50,7 @@ locals {
 
 module "naming" {
   source  = "Azure/naming/azurerm"
-  version = "~> 0.3"
+  version = "~> 0.4"
 }
 
 
@@ -96,12 +97,13 @@ resource "local_file" "private_key" {
 ##################### This is the VNET creation using the module
 module "odaa_vnet" {
   source  = "Azure/avm-res-network-virtualnetwork/azurerm"
-  version = "0.4.0"
+  version = "0.16.0"
 
-  address_space       = ["10.0.0.0/16"]
-  location            = local.location
-  resource_group_name = azurerm_resource_group.this.name
-  name                = "odaa-vnet"
+  location = local.location
+  #  resource_group_name = azurerm_resource_group.this.name
+  parent_id     = azurerm_resource_group.this.id
+  address_space = ["10.0.0.0/16"]
+  name          = "odaa-vnet"
   subnets = {
     snet-odaa = {
       name             = "odaa-snet"
@@ -121,8 +123,8 @@ module "odaa_vnet" {
 
 ##################### This is the ODAA Infrastructure creation using the module
 module "avm_odaa_infra" {
-  source  = "Azure/avm-res-oracledatabase-cloudexadatainfrastructure/azurerm"
-  version = "0.1.0"
+  #  source  = "Azure/avm-res-oracledatabase-cloudexadatainfrastructure/azurerm"
+  source = "git::https://github.com/Azure/terraform-azurerm-avm-res-oracledatabase-cloudexadatainfrastructure.git?ref=grept-apply-1749954587"
 
   compute_count                        = 2
   display_name                         = "odaa-infra-${random_string.suffix.result}"

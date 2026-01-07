@@ -57,3 +57,5 @@ id_dsa
 
 **/az/*
 examples/*/policy
+*.mptfbackup
+.avm

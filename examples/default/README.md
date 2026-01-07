@@ -176,7 +176,8 @@ terraform {
 
 provider "azurerm" {
   features {}
-  skip_provider_registration = true
+  subscription_id                 = "ef2c2154-2d60-433c-a2d8-b947e184c3a7"
+  resource_provider_registrations = "none"
 }
 
 
@@ -242,22 +243,18 @@ resource "local_file" "private_key" {
 ##################### This is the VNET creation using the module
 module "odaa_vnet" {
   source  = "Azure/avm-res-network-virtualnetwork/azurerm"
-  version = "0.4.0"
+  version = "0.17.0"
 
-  address_space       = ["10.0.0.0/16"]
-  location            = local.location
-  resource_group_name = azurerm_resource_group.this.name
-  name                = "odaa-vnet"
-  subnets = {
-    snet-odaa = {
-      name             = "odaa-snet"
-      address_prefixes = ["10.0.0.0/24"]
-      delegation = [{
-        name = "ODAA"
-        service_delegation = {
-          name    = "Oracle.Database/networkAttachments"
-          actions = ["Microsoft.Network/networkinterfaces/*", "Microsoft.Network/virtualNetworks/subnets/join/action"]
-        }
+  location      = local.location
+  parent_id     = azurerm_resource_group.this.id
+  address_space = ["10.0.0.0/16"]
+  name          = "odaa-vnet"
+  tags          = local.tags
+}
+
+module "odaa_subnet" {
+  source  = "Azure/avm-res-network-virtualnetwork/azurerm//modules/subnet"
+  version = "0.17.0"
 
   parent_id        = module.odaa_vnet.resource_id
   address_prefixes = ["10.0.0.0/24"]
@@ -267,9 +264,11 @@ module "odaa_vnet" {
       name    = "Oracle.Database/networkAttachments"
       actions = ["Microsoft.Network/networkinterfaces/*", "Microsoft.Network/virtualNetworks/subnets/join/action"]
     }
-  }
-  tags = local.tags
+
+  }]
+  name = "odaa-snet"
 }
+
 
 ##################### This is the ODAA Infrastructure creation using the module
 module "avm_odaa_infra" {
@@ -312,12 +311,12 @@ module "test_default" {
   memory_size_in_gbs              = 60
   resource_group_id               = azurerm_resource_group.this.id
   ssh_public_keys                 = [tls_private_key.generated_ssh_key.public_key_openssh]
-  subnet_id                       = module.odaa_vnet.subnets.snet-odaa.resource_id
+  subnet_id                       = module.odaa_subnet.resource_id
   vnet_id                         = module.odaa_vnet.resource_id
   backup_subnet_cidr              = "172.17.5.0/24"
   data_storage_percentage         = 80
   enable_telemetry                = local.enable_telemetry
-  gi_version                      = "19.0.0.0"
+  gi_version                      = "24.0.0.0"
   is_diagnostic_events_enabled    = true
   is_health_monitoring_enabled    = true
   is_incident_logs_enabled        = true
@@ -395,17 +394,17 @@ Source: Azure/naming/azurerm
 
 Version: 0.4.3
 
+### <a name="module_odaa_subnet"></a> [odaa\_subnet](#module\_odaa\_subnet)
+
+Source: Azure/avm-res-network-virtualnetwork/azurerm//modules/subnet
+
+Version: 0.17.0
+
 ### <a name="module_odaa_vnet"></a> [odaa\_vnet](#module\_odaa\_vnet)
 
 Source: Azure/avm-res-network-virtualnetwork/azurerm
 
-Version: 0.16.0
-
-### <a name="module_subnets"></a> [subnets](#module\_subnets)
-
-Source: Azure/avm-res-network-virtualnetwork/azurerm//modules/subnet
-
-Version:
+Version: 0.17.0
 
 ### <a name="module_test_default"></a> [test\_default](#module\_test\_default)
 

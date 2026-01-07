@@ -128,7 +128,7 @@ The following requirements are needed by this module:
 
 - <a name="requirement_azapi"></a> [azapi](#requirement\_azapi) (~> 2.4)
 
-- <a name="requirement_azurerm"></a> [azurerm](#requirement\_azurerm) (~> 3.116.0)
+- <a name="requirement_azurerm"></a> [azurerm](#requirement\_azurerm) (~> 4.0)
 
 - <a name="requirement_modtm"></a> [modtm](#requirement\_modtm) (~> 0.3)
 
@@ -607,7 +607,7 @@ Default: `null`
 
 ### <a name="input_system_version"></a> [system\_version](#input\_system\_version)
 
-Description: Operating system version of the image. If not specified, the latest available version will be used. Format: 'XX.XX.XX.XX.XX.XXXXXX' (e.g., '25.1.10.0.0.251020')
+Description: Operating system version of the image.
 
 Type: `string`
 

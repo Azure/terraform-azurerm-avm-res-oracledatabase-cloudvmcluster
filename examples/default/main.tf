@@ -104,27 +104,29 @@ module "odaa_vnet" {
   parent_id     = azurerm_resource_group.this.id
   address_space = ["10.0.0.0/16"]
   name          = "odaa-vnet"
-  subnets = {
-    snet-odaa = {
-      name             = "odaa-snet"
-      address_prefixes = ["10.0.0.0/24"]
-      delegation = [{
-        name = "ODAA"
-        service_delegation = {
-          name    = "Oracle.Database/networkAttachments"
-          actions = ["Microsoft.Network/networkinterfaces/*", "Microsoft.Network/virtualNetworks/subnets/join/action"]
-        }
+  tags          = local.tags
+}
 
-      }]
+module "subnets" {
+  source = "Azure/avm-res-network-virtualnetwork/azurerm//modules/subnet"
+
+  parent_id        = module.odaa_vnet.resource_id
+  address_prefixes = ["10.0.0.0/24"]
+  delegation = [{
+    name = "ODAA"
+    service_delegation = {
+      name    = "Oracle.Database/networkAttachments"
+      actions = ["Microsoft.Network/networkinterfaces/*", "Microsoft.Network/virtualNetworks/subnets/join/action"]
     }
-  }
-  tags = local.tags
+
+  }]
+  name = "odaa-snet"
 }
 
 ##################### This is the ODAA Infrastructure creation using the module
 module "avm_odaa_infra" {
-  #  source  = "Azure/avm-res-oracledatabase-cloudexadatainfrastructure/azurerm"
-  source = "git::https://github.com/Azure/terraform-azurerm-avm-res-oracledatabase-cloudexadatainfrastructure.git?ref=grept-apply-1749954587"
+  source  = "Azure/avm-res-oracledatabase-cloudexadatainfrastructure/azurerm"
+  version = "0.3.0"
 
   compute_count                        = 2
   display_name                         = "odaa-infra-${random_string.suffix.result}"
@@ -163,11 +165,12 @@ module "test_default" {
   memory_size_in_gbs              = 60
   resource_group_id               = azurerm_resource_group.this.id
   ssh_public_keys                 = [tls_private_key.generated_ssh_key.public_key_openssh]
-  subnet_id                       = module.odaa_vnet.subnets.snet-odaa.resource_id
+  subnet_id                       = module.subnets.resource_id
   vnet_id                         = module.odaa_vnet.resource_id
   data_storage_percentage         = 80
   enable_telemetry                = local.enable_telemetry
-  gi_version                      = "19.0.0.0"
+  gi_version                      = "23.0.0.0"
+  system_version                  = "25.1.10.0.0.251020"
   is_diagnostic_events_enabled    = true
   is_health_monitoring_enabled    = true
   is_incident_logs_enabled        = true

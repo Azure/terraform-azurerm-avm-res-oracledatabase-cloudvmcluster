@@ -100,7 +100,7 @@ A map describing customer-managed keys to associate with the resource. This incl
 - `key_version` - (Optional) The version of the key. If not specified, the latest version is used.
 - `user_assigned_identity` - (Optional) An object representing a user-assigned identity with the following properties:
   - `resource_id` - The resource ID of the user-assigned identity.
-DESCRIPTION  
+DESCRIPTION
 }
 
 variable "data_storage_percentage" {
@@ -148,7 +148,7 @@ A map of diagnostic settings to create on the Key Vault. The map key is delibera
 - `event_hub_authorization_rule_resource_id` - (Optional) The resource ID of the event hub authorization rule to send logs and metrics to.
 - `event_hub_name` - (Optional) The name of the event hub. If none is specified, the default event hub will be selected.
 - `marketplace_partner_resource_id` - (Optional) The full ARM resource ID of the Marketplace resource to which you would like to send Diagnostic LogsLogs.
-DESCRIPTION  
+DESCRIPTION
   nullable    = false
 
   validation {
@@ -294,7 +294,7 @@ Add additional Network ingress rules for the network security group of the VM cl
          min = "1521"
          max = "1522"
        }
-   }]  
+   }]
 DESCRIPTION
 }
 
@@ -334,7 +334,7 @@ variable "private_endpoints" {
   default     = {}
   description = <<DESCRIPTION
   A map of private endpoints to create on the Key Vault. The map key is deliberately arbitrary to avoid issues where map keys maybe unknown at plan time.
-  
+
   - `name` - (Optional) The name of the private endpoint. One will be generated if not set.
   - `role_assignments` - (Optional) A map of role assignments to create on the private endpoint. The map key is deliberately arbitrary to avoid issues where map keys maybe unknown at plan time. See `var.role_assignments` for more information.
     - `role_definition_id_or_name` - The ID or name of the role definition to assign to the principal.
@@ -419,11 +419,11 @@ variable "scan_listener_port_tcp_ssl" {
 
 variable "system_version" {
   type        = string
-  default     = "24.1.8.0.0.250130"
-  description = "Operating system version of the image."
+  default     = "25.1.10.0.0.251020"
+  description = "Operating system version of the image. If not specified, the latest available version will be used. Format: 'XX.XX.XX.XX.XX.XXXXXX' (e.g., '25.1.10.0.0.251020')"
 
   validation {
-    condition     = can(regex("^(\\d+\\.){5}\\d{6}$", var.system_version))
+    condition     = var.system_version == null || can(regex("^(\\d+\\.){5}\\d{6}$", var.system_version))
     error_message = "The system version must be in the format 'XX.XX.XX.XX.XX.XXXXXX'."
   }
 }

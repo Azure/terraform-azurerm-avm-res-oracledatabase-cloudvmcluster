@@ -128,6 +128,8 @@ The following requirements are needed by this module:
 
 - <a name="requirement_azapi"></a> [azapi](#requirement\_azapi) (~> 2.4)
 
+- <a name="requirement_azurerm"></a> [azurerm](#requirement\_azurerm) (~> 3.116.0)
+
 - <a name="requirement_modtm"></a> [modtm](#requirement\_modtm) (~> 0.3)
 
 - <a name="requirement_random"></a> [random](#requirement\_random) (~> 3.5)
@@ -148,12 +150,6 @@ The following resources are used by this module:
 
 The following input variables are required:
 
-### <a name="input_backup_subnet_cidr"></a> [backup\_subnet\_cidr](#input\_backup\_subnet\_cidr)
-
-Description: The backup subnet CIDR of the cluster.
-
-Type: `string`
-
 ### <a name="input_cloud_exadata_infrastructure_id"></a> [cloud\_exadata\_infrastructure\_id](#input\_cloud\_exadata\_infrastructure\_id)
 
 Description: The cloud Exadata infrastructure ID.
@@ -162,7 +158,7 @@ Type: `string`
 
 ### <a name="input_cluster_name"></a> [cluster\_name](#input\_cluster\_name)
 
-Description: The name of the the VM Cluster.
+Description: The cluster name for cloud VM cluster. The cluster name must begin with an alphabetic character, and may contain hyphens (-). Underscores (\_) are not permitted. The cluster name can be no longer than 11 characters and is not case sensitive.
 
 Type: `string`
 
@@ -229,6 +225,14 @@ Type: `string`
 ## Optional Inputs
 
 The following input variables are optional (have default values):
+
+### <a name="input_backup_subnet_cidr"></a> [backup\_subnet\_cidr](#input\_backup\_subnet\_cidr)
+
+Description: The backup subnet CIDR of the cluster.
+
+Type: `string`
+
+Default: `null`
 
 ### <a name="input_customer_managed_key"></a> [customer\_managed\_key](#input\_customer\_managed\_key)
 
@@ -321,6 +325,23 @@ If it is set to false, then no telemetry will be collected.
 Type: `bool`
 
 Default: `true`
+
+### <a name="input_file_system_configuration_details"></a> [file\_system\_configuration\_details](#input\_file\_system\_configuration\_details)
+
+Description: Array of mount path and size.
+
+Type:
+
+```hcl
+list(
+    object({
+      fileSystemSizeGb = number
+      mountPoint       = string
+    })
+  )
+```
+
+Default: `null`
 
 ### <a name="input_gi_version"></a> [gi\_version](#input\_gi\_version)
 
@@ -442,6 +463,14 @@ set(object({
     })
   }))
 ```
+
+Default: `null`
+
+### <a name="input_ocpu_count"></a> [ocpu\_count](#input\_ocpu\_count)
+
+Description: The number of OCPU cores to enable on the cloud VM cluster. Only 1 decimal place is allowed for the fractional part.
+
+Type: `number`
 
 Default: `null`
 
@@ -568,13 +597,21 @@ Type: `number`
 
 Default: `2484`
 
+### <a name="input_storage_size_in_gbs"></a> [storage\_size\_in\_gbs](#input\_storage\_size\_in\_gbs)
+
+Description: The local node storage to be allocated in GBs.
+
+Type: `number`
+
+Default: `null`
+
 ### <a name="input_system_version"></a> [system\_version](#input\_system\_version)
 
 Description: Operating system version of the image. If not specified, the latest available version will be used. Format: 'XX.XX.XX.XX.XX.XXXXXX' (e.g., '25.1.10.0.0.251020')
 
 Type: `string`
 
-Default: `"25.1.10.0.0.251020"`
+Default: `null`
 
 ### <a name="input_tags"></a> [tags](#input\_tags)
 
@@ -591,6 +628,14 @@ Description: The time zone of the cluster.
 Type: `string`
 
 Default: `"UTC"`
+
+### <a name="input_zone_id"></a> [zone\_id](#input\_zone\_id)
+
+Description: The OCID of the zone the cloud VM cluster is associated with.
+
+Type: `string`
+
+Default: `null`
 
 ## Outputs
 

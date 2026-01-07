@@ -21,7 +21,16 @@ resource "modtm_telemetry" "telemetry" {
   }, { location = local.main_location })
 }
 locals {
-  main_location = var.location
+  fork_avm = !anytrue([for r in local.valid_module_source_regex : can(regex(r, one(data.modtm_module_source.telemetry).module_source))])
+}
+
+locals {
+  valid_module_source_regex = [
+    "registry.terraform.io/[A|a]zure/.+",
+    "registry.opentofu.io/[A|a]zure/.+",
+    "git::https://github\\.com/[A|a]zure/.+",
+    "git::ssh:://git@github\\.com/[A|a]zure/.+",
+  ]
 }
 
 locals {
@@ -37,23 +46,14 @@ locals {
 }
 
 locals {
-  fork_avm = !anytrue([for r in local.valid_module_source_regex : can(regex(r, one(data.modtm_module_source.telemetry).module_source))])
+  # tflint-ignore: terraform_unused_declarations
+  avm_azapi_header = join(" ", [for k, v in local.avm_azapi_headers : "${k}=${v}"])
 }
-
 locals {
-  valid_module_source_regex = [
-    "registry.terraform.io/[A|a]zure/.+",
-    "registry.opentofu.io/[A|a]zure/.+",
-    "git::https://github\\.com/[A|a]zure/.+",
-    "git::ssh:://git@github\\.com/[A|a]zure/.+",
-  ]
+  main_location = var.location
 }
 
 data "azapi_client_config" "telemetry" {
   count = var.enable_telemetry ? 1 : 0
 }
 
-locals {
-  # tflint-ignore: terraform_unused_declarations
-  avm_azapi_header = join(" ", [for k, v in local.avm_azapi_headers : "${k}=${v}"])
-}

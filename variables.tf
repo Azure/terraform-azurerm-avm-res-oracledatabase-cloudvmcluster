@@ -1,13 +1,3 @@
-variable "backup_subnet_cidr" {
-  type        = string
-  description = "The backup subnet CIDR of the cluster."
-
-  validation {
-    condition     = can(regex("^(\\d+\\.){3}\\d+\\/\\d+$", var.backup_subnet_cidr))
-    error_message = "The backup subnet CIDR must be in the format 'XXX.XXX.XXX.XXX/XX'."
-  }
-}
-
 variable "cloud_exadata_infrastructure_id" {
   type        = string
   description = "The cloud Exadata infrastructure ID."
@@ -15,7 +5,7 @@ variable "cloud_exadata_infrastructure_id" {
 
 variable "cluster_name" {
   type        = string
-  description = "The name of the the VM Cluster."
+  description = "The cluster name for cloud VM cluster. The cluster name must begin with an alphabetic character, and may contain hyphens (-). Underscores (_) are not permitted. The cluster name can be no longer than 11 characters and is not case sensitive."
 
   validation {
     condition     = can(regex("^[a-z0-9-]{3,11}$", var.cluster_name))
@@ -78,6 +68,17 @@ variable "subnet_id" {
 variable "vnet_id" {
   type        = string
   description = "The VNet ID."
+}
+
+variable "backup_subnet_cidr" {
+  type        = string
+  default     = null
+  description = "The backup subnet CIDR of the cluster."
+
+  validation {
+    condition     = can(regex("^(\\d+\\.){3}\\d+\\/\\d+$", var.backup_subnet_cidr)) || var.backup_subnet_cidr == null
+    error_message = "The backup subnet CIDR must be in the format 'XXX.XXX.XXX.XXX/XX'."
+  }
 }
 
 # required AVM interfaces
@@ -181,6 +182,17 @@ For more information see <https://aka.ms/avm/telemetryinfo>.
 If it is set to false, then no telemetry will be collected.
 DESCRIPTION
   nullable    = false
+}
+
+variable "file_system_configuration_details" {
+  type = list(
+    object({
+      fileSystemSizeGb = number
+      mountPoint       = string
+    })
+  )
+  default     = null
+  description = "Array of mount path and size."
 }
 
 variable "gi_version" {
@@ -296,6 +308,12 @@ Add additional Network ingress rules for the network security group of the VM cl
        }
    }]
 DESCRIPTION
+}
+
+variable "ocpu_count" {
+  type        = number
+  default     = null
+  description = "The number of OCPU cores to enable on the cloud VM cluster. Only 1 decimal place is allowed for the fractional part."
 }
 
 # tflint-ignore: terraform_unused_declarations
@@ -417,13 +435,19 @@ variable "scan_listener_port_tcp_ssl" {
   description = "The TCP Single Client Access Name (SCAN) port for SSL. The default port is 2484."
 }
 
+variable "storage_size_in_gbs" {
+  type        = number
+  default     = null
+  description = "The local node storage to be allocated in GBs."
+}
+
 variable "system_version" {
   type        = string
-  default     = "25.1.10.0.0.251020"
-  description = "Operating system version of the image. If not specified, the latest available version will be used. Format: 'XX.XX.XX.XX.XX.XXXXXX' (e.g., '25.1.10.0.0.251020')"
+  default     = null
+  description = "Operating system version of the image."
 
   validation {
-    condition     = var.system_version == null || can(regex("^(\\d+\\.){5}\\d{6}$", var.system_version))
+    condition     = can(regex("^(\\d+\\.){5}\\d{6}$", var.system_version)) || var.system_version == null
     error_message = "The system version must be in the format 'XX.XX.XX.XX.XX.XXXXXX'."
   }
 }
@@ -439,4 +463,10 @@ variable "time_zone" {
   type        = string
   default     = "UTC"
   description = "The time zone of the cluster."
+}
+
+variable "zone_id" {
+  type        = string
+  default     = null
+  description = "The OCID of the zone the cloud VM cluster is associated with."
 }

@@ -2,11 +2,11 @@
 # OperationId: CloudVmClusters_CreateOrUpdate, CloudVmClusters_Get, CloudVmClusters_Delete
 # PUT GET DELETE /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Oracle.Database/cloudVmClusters/{cloudvmclustername}
 resource "azapi_resource" "odaa_vm_cluster" {
+  location  = var.location
   name      = var.cluster_name
   parent_id = var.resource_group_id
-  type      = "Oracle.Database/cloudVmClusters@2023-09-01"
+  type      = "Oracle.Database/cloudVmClusters@2025-03-01"
   body = {
-    "location" : var.location,
     "properties" : {
       "dataStorageSizeInTbs" : var.data_storage_size_in_tbs,
       "dbNodeStorageSizeInGbs" : var.dbnode_storage_size_in_gbs,
@@ -37,15 +37,23 @@ resource "azapi_resource" "odaa_vm_cluster" {
         "isIncidentLogsEnabled" : var.is_incident_logs_enabled
       },
       "displayName" : var.cluster_name,
-      "dbServers" : local.db_servers_ocids
+      "dbServers" : local.db_servers_ocids,
+      "fileSystemConfigurationDetails" : var.file_system_configuration_details
+
+      "clusterName" : var.cluster_name,
+      "ocpuCount" : var.ocpu_count,
+      "storageSizeInGbs" : var.storage_size_in_gbs,
+      "zoneId" : var.zone_id
     }
 
   }
   create_headers            = var.enable_telemetry ? { "User-Agent" : local.avm_azapi_header } : null
   delete_headers            = var.enable_telemetry ? { "User-Agent" : local.avm_azapi_header } : null
+  ignore_null_property      = true
   read_headers              = var.enable_telemetry ? { "User-Agent" : local.avm_azapi_header } : null
   response_export_values    = ["properties.ocid"]
-  schema_validation_enabled = false
+  schema_validation_enabled = true
+  tags                      = var.tags
   update_headers            = var.enable_telemetry ? { "User-Agent" : local.avm_azapi_header } : null
 
   timeouts {
@@ -57,7 +65,9 @@ resource "azapi_resource" "odaa_vm_cluster" {
     ignore_changes = [
       body.properties.giVersion,
       body.properties.hostname,
-      body.properties.sshPublicKeys
+      body.properties.sshPublicKeys,
+      body.properties.fileSystemConfigurationDetails,
+      body.properties.ocpuCount
     ]
   }
 }

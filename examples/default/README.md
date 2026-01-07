@@ -242,18 +242,22 @@ resource "local_file" "private_key" {
 ##################### This is the VNET creation using the module
 module "odaa_vnet" {
   source  = "Azure/avm-res-network-virtualnetwork/azurerm"
-  version = "0.16.0"
+  version = "0.4.0"
 
-  location = local.location
-  #  resource_group_name = azurerm_resource_group.this.name
-  parent_id     = azurerm_resource_group.this.id
-  address_space = ["10.0.0.0/16"]
-  name          = "odaa-vnet"
-  tags          = local.tags
-}
-
-module "subnets" {
-  source = "Azure/avm-res-network-virtualnetwork/azurerm//modules/subnet"
+  address_space       = ["10.0.0.0/16"]
+  location            = local.location
+  resource_group_name = azurerm_resource_group.this.name
+  name                = "odaa-vnet"
+  subnets = {
+    snet-odaa = {
+      name             = "odaa-snet"
+      address_prefixes = ["10.0.0.0/24"]
+      delegation = [{
+        name = "ODAA"
+        service_delegation = {
+          name    = "Oracle.Database/networkAttachments"
+          actions = ["Microsoft.Network/networkinterfaces/*", "Microsoft.Network/virtualNetworks/subnets/join/action"]
+        }
 
   parent_id        = module.odaa_vnet.resource_id
   address_prefixes = ["10.0.0.0/24"]
@@ -263,9 +267,8 @@ module "subnets" {
       name    = "Oracle.Database/networkAttachments"
       actions = ["Microsoft.Network/networkinterfaces/*", "Microsoft.Network/virtualNetworks/subnets/join/action"]
     }
-
-  }]
-  name = "odaa-snet"
+  }
+  tags = local.tags
 }
 
 ##################### This is the ODAA Infrastructure creation using the module
@@ -299,7 +302,6 @@ resource "time_sleep" "wait_5_min_after_deletion" {
 module "test_default" {
   source = "../../"
 
-  backup_subnet_cidr              = "172.17.5.0/24"
   cloud_exadata_infrastructure_id = module.avm_odaa_infra.resource_id
   cluster_name                    = "odaa-vmcl"
   cpu_core_count                  = 4
@@ -310,12 +312,12 @@ module "test_default" {
   memory_size_in_gbs              = 60
   resource_group_id               = azurerm_resource_group.this.id
   ssh_public_keys                 = [tls_private_key.generated_ssh_key.public_key_openssh]
-  subnet_id                       = module.subnets.resource_id
+  subnet_id                       = module.odaa_vnet.subnets.snet-odaa.resource_id
   vnet_id                         = module.odaa_vnet.resource_id
+  backup_subnet_cidr              = "172.17.5.0/24"
   data_storage_percentage         = 80
   enable_telemetry                = local.enable_telemetry
-  gi_version                      = "23.0.0.0"
-  system_version                  = "25.1.10.0.0.251020"
+  gi_version                      = "19.0.0.0"
   is_diagnostic_events_enabled    = true
   is_health_monitoring_enabled    = true
   is_incident_logs_enabled        = true

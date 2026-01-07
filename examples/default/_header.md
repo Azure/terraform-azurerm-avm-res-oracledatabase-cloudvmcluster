@@ -31,7 +31,7 @@ module "oracle_db_cluster" {
   location                        = "eastus"
   cloud_exadata_infrastructure_id = module.exadata_infra.resource_id
   vnet_id                         = module.odaa_vnet.resource_id
-  subnet_id                       = module.odaa_vnet.subnets.snet-odaa.resource_id
+  subnet_id                       = module.subnets.resource_id
   ssh_public_keys                 = [tls_private_key.generated_ssh_key.public_key_openssh]
 
   cluster_name               = "odaa-vmcl"

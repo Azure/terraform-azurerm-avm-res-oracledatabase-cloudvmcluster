@@ -3,12 +3,12 @@ terraform {
 
   required_providers {
     azapi = {
-      source  = "azure/azapi"
-      version = "~> 1.14.0"
+      source  = "Azure/azapi"
+      version = "~> 2.0"
     }
     azurerm = {
       source  = "hashicorp/azurerm"
-      version = "~> 3.116.0"
+      version = "~> 4.0"
     }
     local = {
       source  = "hashicorp/local"
@@ -50,7 +50,7 @@ locals {
 
 module "naming" {
   source  = "Azure/naming/azurerm"
-  version = "~> 0.3"
+  version = "0.4.3"
 }
 
 
@@ -123,7 +123,7 @@ module "odaa_vnet" {
 ##################### This is the ODAA Infrastructure creation using the module
 module "avm_odaa_infra" {
   source  = "Azure/avm-res-oracledatabase-cloudexadatainfrastructure/azurerm"
-  version = "0.1.0"
+  version = "0.3.0"
 
   compute_count                        = 2
   display_name                         = "odaa-infra-${random_string.suffix.result}"

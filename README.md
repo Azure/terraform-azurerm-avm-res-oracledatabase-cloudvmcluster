@@ -450,7 +450,7 @@ Description: Add additional Network ingress rules for the network security group
          min = "1521"  
          max = "1522"
        }
-   }]  
+   }]
 
 Type:
 
@@ -607,7 +607,7 @@ Default: `null`
 
 ### <a name="input_system_version"></a> [system\_version](#input\_system\_version)
 
-Description: Operating system version of the image.
+Description: Operating system version of the image. If not specified, the latest available version will be used. Format: 'XX.XX.XX.XX.XX.XXXXXX' (e.g., '25.1.10.0.0.251020')
 
 Type: `string`
 

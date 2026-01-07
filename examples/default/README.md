@@ -33,7 +33,7 @@ module "oracle_db_cluster" {
   location                        = "eastus"
   cloud_exadata_infrastructure_id = module.exadata_infra.resource_id
   vnet_id                         = module.odaa_vnet.resource_id
-  subnet_id                       = module.odaa_vnet.subnets.snet-odaa.resource_id
+  subnet_id                       = module.subnets.resource_id
   ssh_public_keys                 = [tls_private_key.generated_ssh_key.public_key_openssh]
 
   cluster_name               = "odaa-vmcl"
@@ -148,12 +148,12 @@ terraform {
 
   required_providers {
     azapi = {
-      source  = "azure/azapi"
-      version = "~> 1.14.0"
+      source  = "Azure/azapi"
+      version = "~> 2.0"
     }
     azurerm = {
       source  = "hashicorp/azurerm"
-      version = "~> 3.116.0"
+      version = "~> 4.0"
     }
     local = {
       source  = "hashicorp/local"
@@ -195,7 +195,7 @@ locals {
 
 module "naming" {
   source  = "Azure/naming/azurerm"
-  version = "~> 0.3"
+  version = "0.4.3"
 }
 
 
@@ -259,7 +259,13 @@ module "odaa_vnet" {
           actions = ["Microsoft.Network/networkinterfaces/*", "Microsoft.Network/virtualNetworks/subnets/join/action"]
         }
 
-      }]
+  parent_id        = module.odaa_vnet.resource_id
+  address_prefixes = ["10.0.0.0/24"]
+  delegation = [{
+    name = "ODAA"
+    service_delegation = {
+      name    = "Oracle.Database/networkAttachments"
+      actions = ["Microsoft.Network/networkinterfaces/*", "Microsoft.Network/virtualNetworks/subnets/join/action"]
     }
   }
   tags = local.tags
@@ -268,7 +274,7 @@ module "odaa_vnet" {
 ##################### This is the ODAA Infrastructure creation using the module
 module "avm_odaa_infra" {
   source  = "Azure/avm-res-oracledatabase-cloudexadatainfrastructure/azurerm"
-  version = "0.1.0"
+  version = "0.3.0"
 
   compute_count                        = 2
   display_name                         = "odaa-infra-${random_string.suffix.result}"
@@ -337,9 +343,9 @@ The following requirements are needed by this module:
 
 - <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) (>= 1.9, < 2.0)
 
-- <a name="requirement_azapi"></a> [azapi](#requirement\_azapi) (~> 1.14.0)
+- <a name="requirement_azapi"></a> [azapi](#requirement\_azapi) (~> 2.0)
 
-- <a name="requirement_azurerm"></a> [azurerm](#requirement\_azurerm) (~> 3.116.0)
+- <a name="requirement_azurerm"></a> [azurerm](#requirement\_azurerm) (~> 4.0)
 
 - <a name="requirement_local"></a> [local](#requirement\_local) (2.5.1)
 
@@ -353,7 +359,7 @@ The following requirements are needed by this module:
 
 The following resources are used by this module:
 
-- [azapi_resource.ssh_public_key](https://registry.terraform.io/providers/azure/azapi/latest/docs/resources/resource) (resource)
+- [azapi_resource.ssh_public_key](https://registry.terraform.io/providers/Azure/azapi/latest/docs/resources/resource) (resource)
 - [azurerm_resource_group.this](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/resource_group) (resource)
 - [local_file.private_key](https://registry.terraform.io/providers/hashicorp/local/2.5.1/docs/resources/file) (resource)
 - [random_string.suffix](https://registry.terraform.io/providers/hashicorp/random/latest/docs/resources/string) (resource)
@@ -381,19 +387,25 @@ The following Modules are called:
 
 Source: Azure/avm-res-oracledatabase-cloudexadatainfrastructure/azurerm
 
-Version: 0.1.0
+Version: 0.3.0
 
 ### <a name="module_naming"></a> [naming](#module\_naming)
 
 Source: Azure/naming/azurerm
 
-Version: ~> 0.3
+Version: 0.4.3
 
 ### <a name="module_odaa_vnet"></a> [odaa\_vnet](#module\_odaa\_vnet)
 
 Source: Azure/avm-res-network-virtualnetwork/azurerm
 
-Version: 0.4.0
+Version: 0.16.0
+
+### <a name="module_subnets"></a> [subnets](#module\_subnets)
+
+Source: Azure/avm-res-network-virtualnetwork/azurerm//modules/subnet
+
+Version:
 
 ### <a name="module_test_default"></a> [test\_default](#module\_test\_default)
 

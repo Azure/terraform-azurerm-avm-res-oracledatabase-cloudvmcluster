@@ -195,7 +195,7 @@ locals {
 
 module "naming" {
   source  = "Azure/naming/azurerm"
-  version = "~> 0.4"
+  version = "0.4.3"
 }
 
 
@@ -388,7 +388,7 @@ Version: grept-apply-1749954587
 
 Source: Azure/naming/azurerm
 
-Version: ~> 0.4
+Version: 0.4.3
 
 ### <a name="module_odaa_vnet"></a> [odaa\_vnet](#module\_odaa\_vnet)
 

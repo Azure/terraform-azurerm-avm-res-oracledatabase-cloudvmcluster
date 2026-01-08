@@ -31,7 +31,8 @@ terraform {
 
 provider "azurerm" {
   features {}
-  skip_provider_registration = true
+  subscription_id                 = "ef2c2154-2d60-433c-a2d8-b947e184c3a7"
+  resource_provider_registrations = "none"
 }
 
 
@@ -97,28 +98,32 @@ resource "local_file" "private_key" {
 ##################### This is the VNET creation using the module
 module "odaa_vnet" {
   source  = "Azure/avm-res-network-virtualnetwork/azurerm"
-  version = "0.4.0"
+  version = "0.17.0"
 
-  address_space       = ["10.0.0.0/16"]
-  location            = local.location
-  resource_group_name = azurerm_resource_group.this.name
-  name                = "odaa-vnet"
-  subnets = {
-    snet-odaa = {
-      name             = "odaa-snet"
-      address_prefixes = ["10.0.0.0/24"]
-      delegation = [{
-        name = "ODAA"
-        service_delegation = {
-          name    = "Oracle.Database/networkAttachments"
-          actions = ["Microsoft.Network/networkinterfaces/*", "Microsoft.Network/virtualNetworks/subnets/join/action"]
-        }
-
-      }]
-    }
-  }
-  tags = local.tags
+  location      = local.location
+  parent_id     = azurerm_resource_group.this.id
+  address_space = ["10.0.0.0/16"]
+  name          = "odaa-vnet"
+  tags          = local.tags
 }
+
+module "odaa_subnet" {
+  source  = "Azure/avm-res-network-virtualnetwork/azurerm//modules/subnet"
+  version = "0.17.0"
+
+  parent_id        = module.odaa_vnet.resource_id
+  address_prefixes = ["10.0.0.0/24"]
+  delegation = [{
+    name = "ODAA"
+    service_delegation = {
+      name    = "Oracle.Database/networkAttachments"
+      actions = ["Microsoft.Network/networkinterfaces/*", "Microsoft.Network/virtualNetworks/subnets/join/action"]
+    }
+
+  }]
+  name = "odaa-snet"
+}
+
 
 ##################### This is the ODAA Infrastructure creation using the module
 module "avm_odaa_infra" {
@@ -161,7 +166,7 @@ module "test_default" {
   memory_size_in_gbs              = 60
   resource_group_id               = azurerm_resource_group.this.id
   ssh_public_keys                 = [tls_private_key.generated_ssh_key.public_key_openssh]
-  subnet_id                       = module.odaa_vnet.subnets.snet-odaa.resource_id
+  subnet_id                       = module.odaa_subnet.resource_id
   vnet_id                         = module.odaa_vnet.resource_id
   backup_subnet_cidr              = "172.17.5.0/24"
   data_storage_percentage         = 80

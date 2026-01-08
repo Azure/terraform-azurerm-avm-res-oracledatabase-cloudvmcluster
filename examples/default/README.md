@@ -256,13 +256,7 @@ module "odaa_subnet" {
   source  = "Azure/avm-res-network-virtualnetwork/azurerm//modules/subnet"
   version = "0.17.0"
 
-  parent_id        = module.odaa_vnet.resource_id
-  address_prefixes = ["10.0.0.0/24"]
-  delegation = [{
-    name = "ODAA"
-    service_delegation = {
-      name    = "Oracle.Database/networkAttachments"
-      actions = ["Microsoft.Network/networkinterfaces/*", "Microsoft.Network/virtualNetworks/subnets/join/action"]
+      }]
     }
 
   }]

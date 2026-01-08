@@ -77,7 +77,7 @@ resource "azapi_resource" "vnetOdb" {
 
 module "exadbInfra" {
   source  = "Azure/avm-res-oracledatabase-cloudexadatainfrastructure/azurerm"
-  version = "0.1.1"
+  version = "0.3.0"
 
   # Basics
   location          = local.location

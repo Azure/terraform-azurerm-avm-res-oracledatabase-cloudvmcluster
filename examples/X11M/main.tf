@@ -127,7 +127,7 @@ module "exadbVmc" {
   depends_on = [module.exadbInfra, azapi_resource.vnetOdb]
   # Terraform Registry
   source  = "Azure/avm-res-oracledatabase-cloudvmcluster/azurerm"
-  version = "0.1.5"
+  version = "0.3.0"
 
   # Configure the Cloud Infrastructure resource for the cluster
   cloud_exadata_infrastructure_id = local.exadbInfra_id

@@ -171,7 +171,7 @@ module "test_default" {
   backup_subnet_cidr              = "172.17.5.0/24"
   data_storage_percentage         = 80
   enable_telemetry                = local.enable_telemetry
-  gi_version                      = "24.0.0.0"
+  gi_version                      = "19.0.0.0"
   is_diagnostic_events_enabled    = true
   is_health_monitoring_enabled    = true
   is_incident_logs_enabled        = true

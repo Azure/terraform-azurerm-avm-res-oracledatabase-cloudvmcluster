@@ -259,13 +259,7 @@ module "odaa_vnet" {
           actions = ["Microsoft.Network/networkinterfaces/*", "Microsoft.Network/virtualNetworks/subnets/join/action"]
         }
 
-  parent_id        = module.odaa_vnet.resource_id
-  address_prefixes = ["10.0.0.0/24"]
-  delegation = [{
-    name = "ODAA"
-    service_delegation = {
-      name    = "Oracle.Database/networkAttachments"
-      actions = ["Microsoft.Network/networkinterfaces/*", "Microsoft.Network/virtualNetworks/subnets/join/action"]
+      }]
     }
   }
   tags = local.tags
@@ -399,13 +393,7 @@ Version: 0.4.3
 
 Source: Azure/avm-res-network-virtualnetwork/azurerm
 
-Version: 0.16.0
-
-### <a name="module_subnets"></a> [subnets](#module\_subnets)
-
-Source: Azure/avm-res-network-virtualnetwork/azurerm//modules/subnet
-
-Version:
+Version: 0.4.0
 
 ### <a name="module_test_default"></a> [test\_default](#module\_test\_default)
 

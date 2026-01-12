@@ -314,7 +314,7 @@ resource "azapi_resource" "vnetOdb" {
 
 module "exadbInfra" {
   source  = "Azure/avm-res-oracledatabase-cloudexadatainfrastructure/azurerm"
-  version = "0.3.0"
+  version = "0.3.2"
 
   # Configuration
   compute_count = 2
@@ -401,7 +401,7 @@ The following Modules are called:
 
 Source: Azure/avm-res-oracledatabase-cloudexadatainfrastructure/azurerm
 
-Version: 0.3.0
+Version: 0.3.2
 
 ### <a name="module_exadbVmc"></a> [exadbVmc](#module\_exadbVmc)
 

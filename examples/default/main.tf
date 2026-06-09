@@ -98,7 +98,7 @@ resource "local_file" "private_key" {
 ##################### This is the VNET creation using the module
 module "odaa_vnet" {
   source  = "Azure/avm-res-network-virtualnetwork/azurerm"
-  version = "0.17.0"
+  version = "0.17.1"
 
   location      = local.location
   parent_id     = azurerm_resource_group.this.id
@@ -109,7 +109,7 @@ module "odaa_vnet" {
 
 module "odaa_subnet" {
   source  = "Azure/avm-res-network-virtualnetwork/azurerm//modules/subnet"
-  version = "0.17.0"
+  version = "0.17.1"
 
   parent_id        = module.odaa_vnet.resource_id
   address_prefixes = ["10.0.0.0/24"]

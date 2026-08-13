@@ -58,4 +58,4 @@ id_dsa
 **/az/*
 examples/*/policy
 *.mptfbackup
-.avm
+.avm/managed-files.json

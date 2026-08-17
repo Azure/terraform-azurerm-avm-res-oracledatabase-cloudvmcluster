@@ -340,7 +340,7 @@ module "exadbInfra" {
 module "exadbVmc" {
   # Terraform Registry
   source  = "Azure/avm-res-oracledatabase-cloudvmcluster/azurerm"
-  version = "0.3.0"
+  version = "0.3.2"
 
   # Configure the Cloud Infrastructure resource for the cluster
   cloud_exadata_infrastructure_id = local.exadbInfra_id
@@ -407,7 +407,7 @@ Version: 0.3.2
 
 Source: Azure/avm-res-oracledatabase-cloudvmcluster/azurerm
 
-Version: 0.3.0
+Version: 0.3.2
 
 <!-- markdownlint-disable-next-line MD041 -->
 ## Data Collection

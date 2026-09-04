@@ -180,7 +180,6 @@ provider "azurerm" {
   resource_provider_registrations = "none"
 }
 
-
 locals {
   enable_telemetry = true #enable_telemetry is a variable that controls whether or not telemetry is enabled for the module.
   location         = "eastus"
@@ -193,12 +192,10 @@ locals {
   zone = "3"
 }
 
-
 module "naming" {
   source  = "Azure/naming/azurerm"
   version = "0.4.3"
 }
-
 
 # Create a resource group
 resource "azurerm_resource_group" "this" {
@@ -206,7 +203,6 @@ resource "azurerm_resource_group" "this" {
   name     = module.naming.resource_group.name_unique
   tags     = local.tags
 }
-
 
 # Create a random string for the suffix
 resource "random_string" "suffix" {
@@ -239,7 +235,6 @@ resource "local_file" "private_key" {
   content  = tls_private_key.generated_ssh_key.private_key_pem
 }
 
-
 ##################### This is the VNET creation using the module
 module "odaa_vnet" {
   source  = "Azure/avm-res-network-virtualnetwork/azurerm"
@@ -257,6 +252,7 @@ module "odaa_subnet" {
   version = "0.17.0"
 
   parent_id        = module.odaa_vnet.resource_id
+  name             = "odaa-snet"
   address_prefixes = ["10.0.0.0/24"]
   delegation = [{
     name = "ODAA"
@@ -266,9 +262,7 @@ module "odaa_subnet" {
     }
 
   }]
-  name = "odaa-snet"
 }
-
 
 ##################### This is the ODAA Infrastructure creation using the module
 module "avm_odaa_infra" {
@@ -295,7 +289,6 @@ resource "time_sleep" "wait_5_min_after_deletion" {
 
   depends_on = [module.avm_odaa_infra]
 }
-
 
 ##################### This is the VMCluster creation using the local module
 module "test_default" {

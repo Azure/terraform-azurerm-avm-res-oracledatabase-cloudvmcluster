@@ -153,11 +153,11 @@ terraform {
     }
     azurerm = {
       source  = "hashicorp/azurerm"
-      version = "~> 4.0"
+      version = "~> 5.0"
     }
     local = {
       source  = "hashicorp/local"
-      version = "2.5.1"
+      version = "2.9.0"
     }
     random = {
       source  = "hashicorp/random"
@@ -165,11 +165,11 @@ terraform {
     }
     time = {
       source  = "hashicorp/time"
-      version = "0.12.1"
+      version = "0.14.0"
     }
     tls = {
       source  = "hashicorp/tls"
-      version = "4.0.5"
+      version = "4.3.0"
     }
   }
 }
@@ -238,7 +238,7 @@ resource "local_file" "private_key" {
 ##################### This is the VNET creation using the module
 module "odaa_vnet" {
   source  = "Azure/avm-res-network-virtualnetwork/azurerm"
-  version = "0.17.0"
+  version = "0.20.0"
 
   location      = local.location
   parent_id     = azurerm_resource_group.this.id
@@ -249,7 +249,7 @@ module "odaa_vnet" {
 
 module "odaa_subnet" {
   source  = "Azure/avm-res-network-virtualnetwork/azurerm//modules/subnet"
-  version = "0.17.0"
+  version = "0.20.0"
 
   parent_id        = module.odaa_vnet.resource_id
   name             = "odaa-snet"
@@ -267,7 +267,7 @@ module "odaa_subnet" {
 ##################### This is the ODAA Infrastructure creation using the module
 module "avm_odaa_infra" {
   source  = "Azure/avm-res-oracledatabase-cloudexadatainfrastructure/azurerm"
-  version = "0.3.0"
+  version = "0.3.2"
 
   compute_count                        = 2
   display_name                         = "odaa-infra-${random_string.suffix.result}"
@@ -337,15 +337,15 @@ The following requirements are needed by this module:
 
 - <a name="requirement_azapi"></a> [azapi](#requirement\_azapi) (~> 2.0)
 
-- <a name="requirement_azurerm"></a> [azurerm](#requirement\_azurerm) (~> 4.0)
+- <a name="requirement_azurerm"></a> [azurerm](#requirement\_azurerm) (~> 5.0)
 
-- <a name="requirement_local"></a> [local](#requirement\_local) (2.5.1)
+- <a name="requirement_local"></a> [local](#requirement\_local) (2.9.0)
 
 - <a name="requirement_random"></a> [random](#requirement\_random) (~> 3.5)
 
-- <a name="requirement_time"></a> [time](#requirement\_time) (0.12.1)
+- <a name="requirement_time"></a> [time](#requirement\_time) (0.14.0)
 
-- <a name="requirement_tls"></a> [tls](#requirement\_tls) (4.0.5)
+- <a name="requirement_tls"></a> [tls](#requirement\_tls) (4.3.0)
 
 ## Resources
 
@@ -353,10 +353,10 @@ The following resources are used by this module:
 
 - [azapi_resource.ssh_public_key](https://registry.terraform.io/providers/Azure/azapi/latest/docs/resources/resource) (resource)
 - [azurerm_resource_group.this](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/resource_group) (resource)
-- [local_file.private_key](https://registry.terraform.io/providers/hashicorp/local/2.5.1/docs/resources/file) (resource)
+- [local_file.private_key](https://registry.terraform.io/providers/hashicorp/local/2.9.0/docs/resources/file) (resource)
 - [random_string.suffix](https://registry.terraform.io/providers/hashicorp/random/latest/docs/resources/string) (resource)
-- [time_sleep.wait_5_min_after_deletion](https://registry.terraform.io/providers/hashicorp/time/0.12.1/docs/resources/sleep) (resource)
-- [tls_private_key.generated_ssh_key](https://registry.terraform.io/providers/hashicorp/tls/4.0.5/docs/resources/private_key) (resource)
+- [time_sleep.wait_5_min_after_deletion](https://registry.terraform.io/providers/hashicorp/time/0.14.0/docs/resources/sleep) (resource)
+- [tls_private_key.generated_ssh_key](https://registry.terraform.io/providers/hashicorp/tls/4.3.0/docs/resources/private_key) (resource)
 
 <!-- markdownlint-disable MD013 -->
 ## Required Inputs
@@ -379,7 +379,7 @@ The following Modules are called:
 
 Source: Azure/avm-res-oracledatabase-cloudexadatainfrastructure/azurerm
 
-Version: 0.3.0
+Version: 0.3.2
 
 ### <a name="module_naming"></a> [naming](#module\_naming)
 
@@ -391,13 +391,13 @@ Version: 0.4.3
 
 Source: Azure/avm-res-network-virtualnetwork/azurerm//modules/subnet
 
-Version: 0.17.0
+Version: 0.20.0
 
 ### <a name="module_odaa_vnet"></a> [odaa\_vnet](#module\_odaa\_vnet)
 
 Source: Azure/avm-res-network-virtualnetwork/azurerm
 
-Version: 0.17.0
+Version: 0.20.0
 
 ### <a name="module_test_default"></a> [test\_default](#module\_test\_default)
 

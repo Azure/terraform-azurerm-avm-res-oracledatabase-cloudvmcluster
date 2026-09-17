@@ -240,11 +240,12 @@ module "odaa_vnet" {
   source  = "Azure/avm-res-network-virtualnetwork/azurerm"
   version = "0.17.0"
 
-  location      = local.location
-  parent_id     = azurerm_resource_group.this.id
-  address_space = ["10.0.0.0/16"]
-  name          = "odaa-vnet"
-  tags          = local.tags
+  location         = local.location
+  parent_id        = azurerm_resource_group.this.id
+  address_space    = ["10.0.0.0/16"]
+  enable_telemetry = false
+  name             = "odaa-vnet"
+  tags             = local.tags
 }
 
 module "odaa_subnet" {
@@ -276,7 +277,7 @@ module "avm_odaa_infra" {
   resource_group_id                    = azurerm_resource_group.this.id
   storage_count                        = 3
   zone                                 = local.zone
-  enable_telemetry                     = local.enable_telemetry
+  enable_telemetry                     = false
   maintenance_window_leadtime_in_weeks = 0
   maintenance_window_patching_mode     = "Rolling"
   maintenance_window_preference        = "NoPreference"
@@ -308,7 +309,7 @@ module "test_default" {
   vnet_id                         = module.odaa_vnet.resource_id
   backup_subnet_cidr              = "172.17.5.0/24"
   data_storage_percentage         = 80
-  enable_telemetry                = local.enable_telemetry
+  enable_telemetry                = false
   gi_version                      = "19.0.0.0"
   is_diagnostic_events_enabled    = true
   is_health_monitoring_enabled    = true

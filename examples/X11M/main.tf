@@ -89,7 +89,7 @@ module "exadbInfra" {
   # maintenance_window
   customer_contacts = local.customerContacts
   # AVM specific
-  enable_telemetry = false
+  enable_telemetry = var.enable_telemetry
   # maintenance_window_leadtime_in_weeks = 2
   maintenance_window_patching_mode = "NonRolling"
   maintenance_window_preference    = "NoPreference"
@@ -121,7 +121,7 @@ module "exadbVmc" {
   vnet_id = local.vnet_id
   # Storage configuration
   data_storage_percentage = 80
-  enable_telemetry        = false
+  enable_telemetry        = var.enable_telemetry
   # Azure resource management
   tags = local.tags
 

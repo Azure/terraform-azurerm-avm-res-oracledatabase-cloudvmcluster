@@ -12,7 +12,7 @@ terraform {
     }
     local = {
       source  = "hashicorp/local"
-      version = "2.5.1"
+      version = "2.9.1"
     }
     random = {
       source  = "hashicorp/random"
@@ -20,11 +20,11 @@ terraform {
     }
     time = {
       source  = "hashicorp/time"
-      version = "0.12.1"
+      version = "0.14.2"
     }
     tls = {
       source  = "hashicorp/tls"
-      version = "4.0.5"
+      version = "4.4.1"
     }
   }
 }
@@ -49,7 +49,7 @@ locals {
 
 module "naming" {
   source  = "Azure/naming/azurerm"
-  version = "0.4.3"
+  version = "0.4.4"
 }
 
 # Create a resource group
@@ -93,7 +93,7 @@ resource "local_file" "private_key" {
 ##################### This is the VNET creation using the module
 module "odaa_vnet" {
   source  = "Azure/avm-res-network-virtualnetwork/azurerm"
-  version = "0.17.0"
+  version = "0.22.2"
 
   location         = local.location
   parent_id        = azurerm_resource_group.this.id
@@ -105,7 +105,7 @@ module "odaa_vnet" {
 
 module "odaa_subnet" {
   source  = "Azure/avm-res-network-virtualnetwork/azurerm//modules/subnet"
-  version = "0.17.0"
+  version = "0.22.2"
 
   name             = "odaa-snet"
   parent_id        = module.odaa_vnet.resource_id
@@ -123,7 +123,7 @@ module "odaa_subnet" {
 ##################### This is the ODAA Infrastructure creation using the module
 module "avm_odaa_infra" {
   source  = "Azure/avm-res-oracledatabase-cloudexadatainfrastructure/azurerm"
-  version = "0.3.0"
+  version = "0.3.2"
 
   compute_count                        = 2
   display_name                         = "odaa-infra-${random_string.suffix.result}"

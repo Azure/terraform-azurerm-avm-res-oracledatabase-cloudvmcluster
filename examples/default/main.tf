@@ -36,8 +36,7 @@ provider "azurerm" {
 }
 
 locals {
-  enable_telemetry = true #enable_telemetry is a variable that controls whether or not telemetry is enabled for the module.
-  location         = "eastus"
+  location = "eastus"
   tags = {
     scenario  = "Default"
     project   = "Oracle Database @ Azure"

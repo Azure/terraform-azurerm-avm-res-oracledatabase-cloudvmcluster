@@ -17,6 +17,9 @@ The example contains Terraform code to provision Oracle Database Exadata VM Clus
 
 ## Usage
 
+Set the required `ssh_public_keys` input to your existing SSH public key contents.
+The example does not read a local key file or generate a key pair.
+
 ### Local Variables
 
 ```hcl
@@ -33,9 +36,7 @@ locals {
   customerContacts = [
     { email = "your@email.here" }
   ]
-  ssh_public_keys = [
-    file("path_of_your_ssh_public_key")
-  ]
+  ssh_public_keys = var.ssh_public_keys
   tags = {
     scenario  = "X11M with custom maintenance and file system configuration"
     project   = "Oracle Database @ Azure"

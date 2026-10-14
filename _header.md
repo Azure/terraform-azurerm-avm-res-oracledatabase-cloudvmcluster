@@ -6,6 +6,13 @@ This repository contains a Terraform module for deploying Oracle Database Cloud 
 ## Known issues
 - Destroying VMCluster: When running the destroy command, VMCluster takes longer than the API reports. As a result, Terraform attempts to destroy the Cloud Exadata Infrastructure, which fails because the VMCluster hasn’t been fully deleted yet.
 
+## Breaking change: unused private endpoint input removed
+
+Remove `private_endpoints` from calls to this module before upgrading. This input
+was unused and never created private endpoints. Its removal does not change
+deployed resources and requires no state migration; this module does not provide
+Private Link support.
+
 ## Features
 
 - **Automated Oracle VM Cluster Deployment**: Deploys Oracle Cloud VM Clusters.
@@ -90,7 +97,6 @@ module "oracle_vm_cluster" {
 | `lock`                                | object        | null                 | Resource lock configuration for the cluster.                                                     |
 | `managed_identities`                  | object        | {}                   | Managed identity configuration (system and user-assigned identities).                            |
 | `nsg_cidrs`                           | set(object)   | null                 | Additional network security group ingress rules for the cluster.                                 |
-| `private_endpoints`                   | map(object)   | {}                   | Private endpoints configuration for the cluster.                                                 |
 | `private_endpoints_manage_dns_zone_group`| bool        | true                 | Controls whether DNS zone groups are managed by this module.                                     |
 | `role_assignments`                    | map(object)   | {}                   | Role assignments configuration for the cluster.                                                  |
 | `tags`                                | map(string)   | null                 | Optional tags for the resource.                                                                  |

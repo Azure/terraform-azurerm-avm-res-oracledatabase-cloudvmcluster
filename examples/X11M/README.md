@@ -19,6 +19,9 @@ The example contains Terraform code to provision Oracle Database Exadata VM Clus
 
 ## Usage
 
+Set the required `ssh_public_keys` input to your existing SSH public key contents.
+The example does not read a local key file or generate a key pair.
+
 ### Local Variables
 
 ```hcl
@@ -35,9 +38,7 @@ locals {
   customerContacts = [
     { email = "your@email.here" }
   ]
-  ssh_public_keys = [
-    file("path_of_your_ssh_public_key")
-  ]
+  ssh_public_keys = var.ssh_public_keys
   tags = {
     scenario  = "X11M with custom maintenance and file system configuration"
     project   = "Oracle Database @ Azure"
@@ -238,9 +239,12 @@ This `README.md` provides a detailed overview of the Terraform module, its usage
 
 ```hcl
 terraform {
+  required_version = ">= 1.9, < 2.0"
+
   required_providers {
     azapi = {
-      source = "azure/azapi"
+      source  = "Azure/azapi"
+      version = "~> 2.12"
     }
   }
 }
@@ -256,10 +260,8 @@ locals {
   location          = "uksouth"
   resource_group_id = azapi_resource.rg.id
   rg_name           = "rg-avm-example"
-  ssh_public_keys = [
-    file("path_of_your_ssh_public_key")
-  ]
-  subnet_id = "${azapi_resource.vnetOdb.id}/subnets/${azapi_resource.vnetOdb.body.properties.subnets[0].name}"
+  ssh_public_keys   = var.ssh_public_keys
+  subnet_id         = "${azapi_resource.vnetOdb.id}/subnets/${azapi_resource.vnetOdb.body.properties.subnets[0].name}"
   tags = {
     scenario  = "X11M with custom maintenance and file system configuration"
     project   = "Oracle Database @ Azure"
@@ -371,19 +373,29 @@ module "exadbVmc" {
 <!-- markdownlint-disable MD033 -->
 ## Requirements
 
-No requirements.
+The following requirements are needed by this module:
+
+- <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) (>= 1.9, < 2.0)
+
+- <a name="requirement_azapi"></a> [azapi](#requirement\_azapi) (~> 2.12)
 
 ## Resources
 
 The following resources are used by this module:
 
-- [azapi_resource.rg](https://registry.terraform.io/providers/azure/azapi/latest/docs/resources/resource) (resource)
-- [azapi_resource.vnetOdb](https://registry.terraform.io/providers/azure/azapi/latest/docs/resources/resource) (resource)
+- [azapi_resource.rg](https://registry.terraform.io/providers/Azure/azapi/latest/docs/resources/resource) (resource)
+- [azapi_resource.vnetOdb](https://registry.terraform.io/providers/Azure/azapi/latest/docs/resources/resource) (resource)
 
 <!-- markdownlint-disable MD013 -->
 ## Required Inputs
 
-No required inputs.
+The following input variables are required:
+
+### <a name="input_ssh_public_keys"></a> [ssh\_public\_keys](#input\_ssh\_public\_keys)
+
+Description: SSH public keys authorized to access the VM cluster. Supply the public key contents, not file paths.
+
+Type: `list(string)`
 
 ## Optional Inputs
 

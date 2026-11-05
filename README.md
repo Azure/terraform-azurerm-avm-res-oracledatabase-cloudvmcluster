@@ -15,6 +15,15 @@ was unused and never created private endpoints. Its removal does not change
 deployed resources and requires no state migration; this module does not provide
 Private Link support.
 
+## Telemetry migration
+
+Telemetry now uses a subscription-scoped Azure deployment instead of the ModTM
+provider. When enabled, the deployment identity needs read, write, and delete
+permissions for `Microsoft.Resources/deployments` at subscription scope. The
+generated migration blocks forget the old telemetry resources without
+destroying them. Existing state may require the old ModTM and random providers
+for one final initialization; new installations do not require them.
+
 ## Features
 
 - **Automated Oracle VM Cluster Deployment**: Deploys Oracle Cloud VM Clusters.
@@ -134,20 +143,15 @@ The following requirements are needed by this module:
 
 - <a name="requirement_azapi"></a> [azapi](#requirement\_azapi) (~> 2.12)
 
-- <a name="requirement_modtm"></a> [modtm](#requirement\_modtm) (~> 0.3)
-
-- <a name="requirement_random"></a> [random](#requirement\_random) (~> 3.5)
-
 ## Resources
 
 The following resources are used by this module:
 
 - [azapi_resource.odaa_vm_cluster](https://registry.terraform.io/providers/Azure/azapi/latest/docs/resources/resource) (resource)
-- [modtm_telemetry.telemetry](https://registry.terraform.io/providers/azure/modtm/latest/docs/resources/telemetry) (resource)
-- [random_uuid.telemetry](https://registry.terraform.io/providers/hashicorp/random/latest/docs/resources/uuid) (resource)
+- [azapi_resource.telemetry](https://registry.terraform.io/providers/Azure/azapi/latest/docs/resources/resource) (resource)
+- [terraform_data.telemetry](https://registry.terraform.io/providers/hashicorp/terraform/latest/docs/resources/data) (resource)
 - [azapi_client_config.telemetry](https://registry.terraform.io/providers/Azure/azapi/latest/docs/data-sources/client_config) (data source)
 - [azapi_resource_list.list_dbservers_by_cloudexadata_infrastructure](https://registry.terraform.io/providers/Azure/azapi/latest/docs/data-sources/resource_list) (data source)
-- [modtm_module_source.telemetry](https://registry.terraform.io/providers/azure/modtm/latest/docs/data-sources/module_source) (data source)
 
 <!-- markdownlint-disable MD013 -->
 ## Required Inputs

@@ -76,7 +76,7 @@ resource "azapi_resource" "vnetOdb" {
 
 module "exadbInfra" {
   source  = "Azure/avm-res-oracledatabase-cloudexadatainfrastructure/azurerm"
-  version = "0.3.2"
+  version = "0.4.0"
 
   # Configuration
   compute_count = 2
@@ -100,9 +100,7 @@ module "exadbInfra" {
 }
 
 module "exadbVmc" {
-  # Terraform Registry
-  source  = "Azure/avm-res-oracledatabase-cloudvmcluster/azurerm"
-  version = "0.3.0"
+  source = "../../"
 
   # Configure the Cloud Infrastructure resource for the cluster
   cloud_exadata_infrastructure_id = local.exadbInfra_id

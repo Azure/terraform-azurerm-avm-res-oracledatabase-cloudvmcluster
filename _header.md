@@ -13,6 +13,15 @@ was unused and never created private endpoints. Its removal does not change
 deployed resources and requires no state migration; this module does not provide
 Private Link support.
 
+## Telemetry migration
+
+Telemetry now uses a subscription-scoped Azure deployment instead of the ModTM
+provider. When enabled, the deployment identity needs read, write, and delete
+permissions for `Microsoft.Resources/deployments` at subscription scope. The
+generated migration blocks forget the old telemetry resources without
+destroying them. Existing state may require the old ModTM and random providers
+for one final initialization; new installations do not require them.
+
 ## Features
 
 - **Automated Oracle VM Cluster Deployment**: Deploys Oracle Cloud VM Clusters.

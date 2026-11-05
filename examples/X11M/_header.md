@@ -104,7 +104,7 @@ The module provisions Exadata Infrastructure X11M with custom maintenance config
 ```hcl
 module "exadbInfra" {
   source  = "Azure/avm-res-oracledatabase-cloudexadatainfrastructure/azurerm"
-  version = "0.1.1"
+  version = "0.4.0"
 
   # Basics
   location          = local.location
@@ -157,9 +157,7 @@ The module provisions the Oracle VM Cluster with custom file system configuratio
 ```hcl
 module "exadbVmc" {
   depends_on = [module.exadbInfra, azapi_resource.vnetOdb]
-  # Terraform Registry
-  source  = "Azure/avm-res-oracledatabase-cloudvmcluster/azurerm"
-  version = "0.1.5"
+  source = "../../"
 
   # Configure the Cloud Infrastructure resource for the cluster
   cloud_exadata_infrastructure_id = local.exadbInfra_id

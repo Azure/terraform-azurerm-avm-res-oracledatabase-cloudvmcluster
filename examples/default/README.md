@@ -23,6 +23,10 @@ This deploys the module in its simplest form. The example contains Terraform cod
 
 ## Usage
 
+Set `ARM_SUBSCRIPTION_ID` to the target subscription and authenticate with an
+identity authorized in that subscription's tenant. AzureRM and AzAPI use this
+subscription for the example; the hosted workflow supplies it automatically.
+
 ### Basic Example
 
 ```hcl
@@ -181,7 +185,6 @@ terraform {
 
 provider "azurerm" {
   features {}
-  subscription_id                 = "ef2c2154-2d60-433c-a2d8-b947e184c3a7"
   resource_provider_registrations = "none"
 }
 

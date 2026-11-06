@@ -15,12 +15,16 @@ The example contains Terraform code to provision Oracle Database Exadata VM Clus
 - Create new Azure Resource Group
 - Create new Virtual Network with a delegated subnet for Oracle Database@Azure
 - Create new Oracle Exadata Infrastructure X11M with custom maintenance configuration
-- Create new Oracle Cloud VM Cluster with custom file system configuration and existing local SSH public key
+- Create new Oracle Cloud VM Cluster with custom file system configuration and SSH public keys
 
 ## Usage
 
-Set the required `ssh_public_keys` input to your existing SSH public key contents.
-The example does not read a local key file or generate a key pair.
+For direct Terraform use, set the required `ssh_public_keys` input to your existing SSH public key contents.
+The AVM policy and E2E hooks use caller-supplied values when present; otherwise, the pre-hook generates
+a disposable RSA public key in memory and supplies it through the example's `.env` file. Terraform
+variable files take precedence over this fallback. The private key is discarded immediately, so this
+fallback cannot be used to log in. The post-hook removes the fixture without overwriting an existing
+`.env` file; if that file changes during the run, cleanup stops and requires manual recovery.
 
 ### Local Variables
 
@@ -154,7 +158,7 @@ module "exadbInfra" {
 
 ### Exadata VM Cluster
 
-The module provisions the Oracle VM Cluster with custom file system configuration, and existing local SSH public key
+The module provisions the Oracle VM Cluster with custom file system configuration and SSH public keys.
 
 ```hcl
 module "exadbVmc" {

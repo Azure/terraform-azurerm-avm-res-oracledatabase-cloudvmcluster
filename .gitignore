@@ -54,6 +54,8 @@ id_dsa.pub
 id_dsa
 *.pem
 *.key
+examples/X11M/.env
+examples/X11M/.avm-ssh-fixture
 
 **/az/*
 examples/*/policy

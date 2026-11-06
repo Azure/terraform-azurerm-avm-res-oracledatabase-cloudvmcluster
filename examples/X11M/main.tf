@@ -1,7 +1,10 @@
 terraform {
+  required_version = ">= 1.9, < 2.0"
+
   required_providers {
     azapi = {
-      source = "azure/azapi"
+      source  = "Azure/azapi"
+      version = "~> 2.12"
     }
   }
 }
@@ -17,10 +20,8 @@ locals {
   location          = "uksouth"
   resource_group_id = azapi_resource.rg.id
   rg_name           = "rg-avm-example"
-  ssh_public_keys = [
-    file("path_of_your_ssh_public_key")
-  ]
-  subnet_id = "${azapi_resource.vnetOdb.id}/subnets/${azapi_resource.vnetOdb.body.properties.subnets[0].name}"
+  ssh_public_keys   = var.ssh_public_keys
+  subnet_id         = "${azapi_resource.vnetOdb.id}/subnets/${azapi_resource.vnetOdb.body.properties.subnets[0].name}"
   tags = {
     scenario  = "X11M with custom maintenance and file system configuration"
     project   = "Oracle Database @ Azure"
@@ -75,7 +76,7 @@ resource "azapi_resource" "vnetOdb" {
 
 module "exadbInfra" {
   source  = "Azure/avm-res-oracledatabase-cloudexadatainfrastructure/azurerm"
-  version = "0.3.2"
+  version = "0.4.0"
 
   # Configuration
   compute_count = 2
@@ -99,9 +100,7 @@ module "exadbInfra" {
 }
 
 module "exadbVmc" {
-  # Terraform Registry
-  source  = "Azure/avm-res-oracledatabase-cloudvmcluster/azurerm"
-  version = "0.3.0"
+  source = "../../"
 
   # Configure the Cloud Infrastructure resource for the cluster
   cloud_exadata_infrastructure_id = local.exadbInfra_id

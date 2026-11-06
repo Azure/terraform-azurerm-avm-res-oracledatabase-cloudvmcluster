@@ -15,9 +15,16 @@ The example contains Terraform code to provision Oracle Database Exadata VM Clus
 - Create new Azure Resource Group
 - Create new Virtual Network with a delegated subnet for Oracle Database@Azure
 - Create new Oracle Exadata Infrastructure X11M with custom maintenance configuration
-- Create new Oracle Cloud VM Cluster with custom file system configuration and existing local SSH public key
+- Create new Oracle Cloud VM Cluster with custom file system configuration and SSH public keys
 
 ## Usage
+
+For direct Terraform use, set the required `ssh_public_keys` input to your existing SSH public key contents.
+The AVM policy and E2E hooks use caller-supplied values when present; otherwise, the pre-hook generates
+a disposable RSA public key in memory and supplies it through the example's `.env` file. Terraform
+variable files take precedence over this fallback. The private key is discarded immediately, so this
+fallback cannot be used to log in. The post-hook removes the fixture without overwriting an existing
+`.env` file; if that file changes during the run, cleanup stops and requires manual recovery.
 
 ### Local Variables
 
@@ -35,9 +42,7 @@ locals {
   customerContacts = [
     { email = "your@email.here" }
   ]
-  ssh_public_keys = [
-    file("path_of_your_ssh_public_key")
-  ]
+  ssh_public_keys = var.ssh_public_keys
   tags = {
     scenario  = "X11M with custom maintenance and file system configuration"
     project   = "Oracle Database @ Azure"
@@ -105,7 +110,7 @@ The module provisions Exadata Infrastructure X11M with custom maintenance config
 ```hcl
 module "exadbInfra" {
   source  = "Azure/avm-res-oracledatabase-cloudexadatainfrastructure/azurerm"
-  version = "0.1.1"
+  version = "0.4.0"
 
   # Basics
   location          = local.location
@@ -153,14 +158,12 @@ module "exadbInfra" {
 
 ### Exadata VM Cluster
 
-The module provisions the Oracle VM Cluster with custom file system configuration, and existing local SSH public key
+The module provisions the Oracle VM Cluster with custom file system configuration and SSH public keys.
 
 ```hcl
 module "exadbVmc" {
   depends_on = [module.exadbInfra, azapi_resource.vnetOdb]
-  # Terraform Registry
-  source  = "Azure/avm-res-oracledatabase-cloudvmcluster/azurerm"
-  version = "0.1.5"
+  source = "../../"
 
   # Configure the Cloud Infrastructure resource for the cluster
   cloud_exadata_infrastructure_id = local.exadbInfra_id
@@ -238,9 +241,12 @@ This `README.md` provides a detailed overview of the Terraform module, its usage
 
 ```hcl
 terraform {
+  required_version = ">= 1.9, < 2.0"
+
   required_providers {
     azapi = {
-      source = "azure/azapi"
+      source  = "Azure/azapi"
+      version = "~> 2.12"
     }
   }
 }
@@ -256,10 +262,8 @@ locals {
   location          = "uksouth"
   resource_group_id = azapi_resource.rg.id
   rg_name           = "rg-avm-example"
-  ssh_public_keys = [
-    file("path_of_your_ssh_public_key")
-  ]
-  subnet_id = "${azapi_resource.vnetOdb.id}/subnets/${azapi_resource.vnetOdb.body.properties.subnets[0].name}"
+  ssh_public_keys   = var.ssh_public_keys
+  subnet_id         = "${azapi_resource.vnetOdb.id}/subnets/${azapi_resource.vnetOdb.body.properties.subnets[0].name}"
   tags = {
     scenario  = "X11M with custom maintenance and file system configuration"
     project   = "Oracle Database @ Azure"
@@ -314,7 +318,7 @@ resource "azapi_resource" "vnetOdb" {
 
 module "exadbInfra" {
   source  = "Azure/avm-res-oracledatabase-cloudexadatainfrastructure/azurerm"
-  version = "0.3.2"
+  version = "0.4.0"
 
   # Configuration
   compute_count = 2
@@ -338,9 +342,7 @@ module "exadbInfra" {
 }
 
 module "exadbVmc" {
-  # Terraform Registry
-  source  = "Azure/avm-res-oracledatabase-cloudvmcluster/azurerm"
-  version = "0.3.0"
+  source = "../../"
 
   # Configure the Cloud Infrastructure resource for the cluster
   cloud_exadata_infrastructure_id = local.exadbInfra_id
@@ -371,19 +373,29 @@ module "exadbVmc" {
 <!-- markdownlint-disable MD033 -->
 ## Requirements
 
-No requirements.
+The following requirements are needed by this module:
+
+- <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) (>= 1.9, < 2.0)
+
+- <a name="requirement_azapi"></a> [azapi](#requirement\_azapi) (~> 2.12)
 
 ## Resources
 
 The following resources are used by this module:
 
-- [azapi_resource.rg](https://registry.terraform.io/providers/azure/azapi/latest/docs/resources/resource) (resource)
-- [azapi_resource.vnetOdb](https://registry.terraform.io/providers/azure/azapi/latest/docs/resources/resource) (resource)
+- [azapi_resource.rg](https://registry.terraform.io/providers/Azure/azapi/latest/docs/resources/resource) (resource)
+- [azapi_resource.vnetOdb](https://registry.terraform.io/providers/Azure/azapi/latest/docs/resources/resource) (resource)
 
 <!-- markdownlint-disable MD013 -->
 ## Required Inputs
 
-No required inputs.
+The following input variables are required:
+
+### <a name="input_ssh_public_keys"></a> [ssh\_public\_keys](#input\_ssh\_public\_keys)
+
+Description: SSH public keys authorized to access the VM cluster. Supply the public key contents, not file paths.
+
+Type: `list(string)`
 
 ## Optional Inputs
 
@@ -411,13 +423,13 @@ The following Modules are called:
 
 Source: Azure/avm-res-oracledatabase-cloudexadatainfrastructure/azurerm
 
-Version: 0.3.2
+Version: 0.4.0
 
 ### <a name="module_exadbVmc"></a> [exadbVmc](#module\_exadbVmc)
 
-Source: Azure/avm-res-oracledatabase-cloudvmcluster/azurerm
+Source: ../../
 
-Version: 0.3.0
+Version:
 
 <!-- markdownlint-disable-next-line MD041 -->
 ## Data Collection

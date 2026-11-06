@@ -31,13 +31,11 @@ terraform {
 
 provider "azurerm" {
   features {}
-  subscription_id                 = "ef2c2154-2d60-433c-a2d8-b947e184c3a7"
   resource_provider_registrations = "none"
 }
 
 locals {
-  enable_telemetry = true #enable_telemetry is a variable that controls whether or not telemetry is enabled for the module.
-  location         = "eastus"
+  location = "eastus"
   tags = {
     scenario  = "Default"
     project   = "Oracle Database @ Azure"
@@ -48,14 +46,14 @@ locals {
 }
 
 module "naming" {
-  source  = "Azure/naming/azurerm"
-  version = "0.4.3"
+  source  = "Azure/avm-utl-naming/azure"
+  version = "0.2.0"
 }
 
 # Create a resource group
 resource "azurerm_resource_group" "this" {
   location = local.location
-  name     = module.naming.resource_group.name_unique
+  name     = module.naming.names.resource_group.name_unique
   tags     = local.tags
 }
 
@@ -93,7 +91,7 @@ resource "local_file" "private_key" {
 ##################### This is the VNET creation using the module
 module "odaa_vnet" {
   source  = "Azure/avm-res-network-virtualnetwork/azurerm"
-  version = "0.17.0"
+  version = "0.23.0"
 
   location         = local.location
   parent_id        = azurerm_resource_group.this.id
@@ -105,25 +103,25 @@ module "odaa_vnet" {
 
 module "odaa_subnet" {
   source  = "Azure/avm-res-network-virtualnetwork/azurerm//modules/subnet"
-  version = "0.17.0"
+  version = "0.23.0"
 
   name             = "odaa-snet"
   parent_id        = module.odaa_vnet.resource_id
   address_prefixes = ["10.0.0.0/24"]
-  delegation = [{
+  delegations = [{
     name = "ODAA"
     service_delegation = {
-      name    = "Oracle.Database/networkAttachments"
-      actions = ["Microsoft.Network/networkinterfaces/*", "Microsoft.Network/virtualNetworks/subnets/join/action"]
+      name = "Oracle.Database/networkAttachments"
     }
-
   }]
+  enable_telemetry = var.enable_telemetry
+  location         = local.location
 }
 
 ##################### This is the ODAA Infrastructure creation using the module
 module "avm_odaa_infra" {
   source  = "Azure/avm-res-oracledatabase-cloudexadatainfrastructure/azurerm"
-  version = "0.3.0"
+  version = "0.4.0"
 
   compute_count                        = 2
   display_name                         = "odaa-infra-${random_string.suffix.result}"

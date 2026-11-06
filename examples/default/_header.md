@@ -21,6 +21,10 @@ This deploys the module in its simplest form. The example contains Terraform cod
 
 ## Usage
 
+Set `ARM_SUBSCRIPTION_ID` to the target subscription and authenticate with an
+identity authorized in that subscription's tenant. AzureRM and AzAPI use this
+subscription for the example; the hosted workflow supplies it automatically.
+
 ### Basic Example
 
 ```hcl
@@ -63,26 +67,31 @@ A VNet is set up with a subnet specific to Oracle VM Cluster services:
 
 ```hcl
 module "odaa_vnet" {
-  source        = "Azure/avm-res-network-virtualnetwork/azurerm"
-  version       = "0.4.0"
-  name          = "odaa-vnet"
-  address_space = ["10.0.0.0/16"]
+  source  = "Azure/avm-res-network-virtualnetwork/azurerm"
+  version = "0.23.0"
 
-  subnets = {
-    snet-odaa = {
-      name             = "odaa-snet"
-      address_prefixes = ["10.0.0.0/24"]
-      delegation = [{
-        name = "ODAA"
-        service_delegation = {
-          name    = "Oracle.Database/networkAttachments"
-          actions = ["Microsoft.Network/networkinterfaces/*", "Microsoft.Network/virtualNetworks/subnets/join/action"]
-        }
-      }]
+  name             = "odaa-vnet"
+  location         = local.location
+  parent_id        = azurerm_resource_group.this.id
+  address_space    = ["10.0.0.0/16"]
+  enable_telemetry = var.enable_telemetry
+}
+
+module "odaa_subnet" {
+  source  = "Azure/avm-res-network-virtualnetwork/azurerm//modules/subnet"
+  version = "0.23.0"
+
+  name             = "odaa-snet"
+  parent_id        = module.odaa_vnet.resource_id
+  address_prefixes = ["10.0.0.0/24"]
+  location         = local.location
+  enable_telemetry = var.enable_telemetry
+  delegations = [{
+    name = "ODAA"
+    service_delegation = {
+      name = "Oracle.Database/networkAttachments"
     }
-  }
-
-  resource_group_name = azurerm_resource_group.this.name
+  }]
 }
 ```
 
@@ -93,7 +102,7 @@ The module also provisions the Exadata infrastructure and the Oracle VM Cluster:
 ```hcl
 module "avm_odaa_infra" {
   source  = "Azure/avm-res-oracledatabase-cloudexadatainfrastructure/azurerm"
-  version = "0.1.0"
+  version = "0.4.0"
 
   name              = "odaa-infra-${random_string.suffix.result}"
   compute_count     = 2

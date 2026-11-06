@@ -23,6 +23,10 @@ This deploys the module in its simplest form. The example contains Terraform cod
 
 ## Usage
 
+Set `ARM_SUBSCRIPTION_ID` to the target subscription and authenticate with an
+identity authorized in that subscription's tenant. AzureRM and AzAPI use this
+subscription for the example; the hosted workflow supplies it automatically.
+
 ### Basic Example
 
 ```hcl
@@ -65,26 +69,31 @@ A VNet is set up with a subnet specific to Oracle VM Cluster services:
 
 ```hcl
 module "odaa_vnet" {
-  source        = "Azure/avm-res-network-virtualnetwork/azurerm"
-  version       = "0.4.0"
-  name          = "odaa-vnet"
-  address_space = ["10.0.0.0/16"]
+  source  = "Azure/avm-res-network-virtualnetwork/azurerm"
+  version = "0.23.0"
 
-  subnets = {
-    snet-odaa = {
-      name             = "odaa-snet"
-      address_prefixes = ["10.0.0.0/24"]
-      delegation = [{
-        name = "ODAA"
-        service_delegation = {
-          name    = "Oracle.Database/networkAttachments"
-          actions = ["Microsoft.Network/networkinterfaces/*", "Microsoft.Network/virtualNetworks/subnets/join/action"]
-        }
-      }]
+  name             = "odaa-vnet"
+  location         = local.location
+  parent_id        = azurerm_resource_group.this.id
+  address_space    = ["10.0.0.0/16"]
+  enable_telemetry = var.enable_telemetry
+}
+
+module "odaa_subnet" {
+  source  = "Azure/avm-res-network-virtualnetwork/azurerm//modules/subnet"
+  version = "0.23.0"
+
+  name             = "odaa-snet"
+  parent_id        = module.odaa_vnet.resource_id
+  address_prefixes = ["10.0.0.0/24"]
+  location         = local.location
+  enable_telemetry = var.enable_telemetry
+  delegations = [{
+    name = "ODAA"
+    service_delegation = {
+      name = "Oracle.Database/networkAttachments"
     }
-  }
-
-  resource_group_name = azurerm_resource_group.this.name
+  }]
 }
 ```
 
@@ -95,7 +104,7 @@ The module also provisions the Exadata infrastructure and the Oracle VM Cluster:
 ```hcl
 module "avm_odaa_infra" {
   source  = "Azure/avm-res-oracledatabase-cloudexadatainfrastructure/azurerm"
-  version = "0.1.0"
+  version = "0.4.0"
 
   name              = "odaa-infra-${random_string.suffix.result}"
   compute_count     = 2
@@ -176,13 +185,11 @@ terraform {
 
 provider "azurerm" {
   features {}
-  subscription_id                 = "ef2c2154-2d60-433c-a2d8-b947e184c3a7"
   resource_provider_registrations = "none"
 }
 
 locals {
-  enable_telemetry = true #enable_telemetry is a variable that controls whether or not telemetry is enabled for the module.
-  location         = "eastus"
+  location = "eastus"
   tags = {
     scenario  = "Default"
     project   = "Oracle Database @ Azure"
@@ -193,14 +200,14 @@ locals {
 }
 
 module "naming" {
-  source  = "Azure/naming/azurerm"
-  version = "0.4.3"
+  source  = "Azure/avm-utl-naming/azure"
+  version = "0.2.0"
 }
 
 # Create a resource group
 resource "azurerm_resource_group" "this" {
   location = local.location
-  name     = module.naming.resource_group.name_unique
+  name     = module.naming.names.resource_group.name_unique
   tags     = local.tags
 }
 
@@ -238,7 +245,7 @@ resource "local_file" "private_key" {
 ##################### This is the VNET creation using the module
 module "odaa_vnet" {
   source  = "Azure/avm-res-network-virtualnetwork/azurerm"
-  version = "0.17.0"
+  version = "0.23.0"
 
   location         = local.location
   parent_id        = azurerm_resource_group.this.id
@@ -250,25 +257,25 @@ module "odaa_vnet" {
 
 module "odaa_subnet" {
   source  = "Azure/avm-res-network-virtualnetwork/azurerm//modules/subnet"
-  version = "0.17.0"
+  version = "0.23.0"
 
   name             = "odaa-snet"
   parent_id        = module.odaa_vnet.resource_id
   address_prefixes = ["10.0.0.0/24"]
-  delegation = [{
+  delegations = [{
     name = "ODAA"
     service_delegation = {
-      name    = "Oracle.Database/networkAttachments"
-      actions = ["Microsoft.Network/networkinterfaces/*", "Microsoft.Network/virtualNetworks/subnets/join/action"]
+      name = "Oracle.Database/networkAttachments"
     }
-
   }]
+  enable_telemetry = var.enable_telemetry
+  location         = local.location
 }
 
 ##################### This is the ODAA Infrastructure creation using the module
 module "avm_odaa_infra" {
   source  = "Azure/avm-res-oracledatabase-cloudexadatainfrastructure/azurerm"
-  version = "0.3.0"
+  version = "0.4.0"
 
   compute_count                        = 2
   display_name                         = "odaa-infra-${random_string.suffix.result}"
@@ -390,25 +397,25 @@ The following Modules are called:
 
 Source: Azure/avm-res-oracledatabase-cloudexadatainfrastructure/azurerm
 
-Version: 0.3.0
+Version: 0.4.0
 
 ### <a name="module_naming"></a> [naming](#module\_naming)
 
-Source: Azure/naming/azurerm
+Source: Azure/avm-utl-naming/azure
 
-Version: 0.4.3
+Version: 0.2.0
 
 ### <a name="module_odaa_subnet"></a> [odaa\_subnet](#module\_odaa\_subnet)
 
 Source: Azure/avm-res-network-virtualnetwork/azurerm//modules/subnet
 
-Version: 0.17.0
+Version: 0.23.0
 
 ### <a name="module_odaa_vnet"></a> [odaa\_vnet](#module\_odaa\_vnet)
 
 Source: Azure/avm-res-network-virtualnetwork/azurerm
 
-Version: 0.17.0
+Version: 0.23.0
 
 ### <a name="module_test_default"></a> [test\_default](#module\_test\_default)
 

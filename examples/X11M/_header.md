@@ -13,9 +13,16 @@ The example contains Terraform code to provision Oracle Database Exadata VM Clus
 - Create new Azure Resource Group
 - Create new Virtual Network with a delegated subnet for Oracle Database@Azure
 - Create new Oracle Exadata Infrastructure X11M with custom maintenance configuration
-- Create new Oracle Cloud VM Cluster with custom file system configuration and existing local SSH public key
+- Create new Oracle Cloud VM Cluster with custom file system configuration and SSH public keys
 
 ## Usage
+
+For direct Terraform use, set the required `ssh_public_keys` input to your existing SSH public key contents.
+The AVM policy and E2E hooks use caller-supplied values when present; otherwise, the pre-hook generates
+a disposable RSA public key in memory and supplies it through the example's `.env` file. Terraform
+variable files take precedence over this fallback. The private key is discarded immediately, so this
+fallback cannot be used to log in. The post-hook removes the fixture without overwriting an existing
+`.env` file; if that file changes during the run, cleanup stops and requires manual recovery.
 
 ### Local Variables
 
@@ -33,9 +40,7 @@ locals {
   customerContacts = [
     { email = "your@email.here" }
   ]
-  ssh_public_keys = [
-    file("path_of_your_ssh_public_key")
-  ]
+  ssh_public_keys = var.ssh_public_keys
   tags = {
     scenario  = "X11M with custom maintenance and file system configuration"
     project   = "Oracle Database @ Azure"
@@ -103,7 +108,7 @@ The module provisions Exadata Infrastructure X11M with custom maintenance config
 ```hcl
 module "exadbInfra" {
   source  = "Azure/avm-res-oracledatabase-cloudexadatainfrastructure/azurerm"
-  version = "0.1.1"
+  version = "0.4.0"
 
   # Basics
   location          = local.location
@@ -151,14 +156,12 @@ module "exadbInfra" {
 
 ### Exadata VM Cluster 
 
-The module provisions the Oracle VM Cluster with custom file system configuration, and existing local SSH public key
+The module provisions the Oracle VM Cluster with custom file system configuration and SSH public keys.
 
 ```hcl
 module "exadbVmc" {
   depends_on = [module.exadbInfra, azapi_resource.vnetOdb]
-  # Terraform Registry
-  source  = "Azure/avm-res-oracledatabase-cloudvmcluster/azurerm"
-  version = "0.1.5"
+  source = "../../"
 
   # Configure the Cloud Infrastructure resource for the cluster
   cloud_exadata_infrastructure_id = local.exadbInfra_id

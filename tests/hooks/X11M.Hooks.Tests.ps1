@@ -45,6 +45,12 @@ try {
     finally {
         $stream.Dispose()
     }
+    if ($IsWindows) {
+        foreach ($path in @($envPath, $statePath)) {
+            $attributes = [System.IO.File]::GetAttributes($path)
+            [System.IO.File]::SetAttributes($path, $attributes -bor [System.IO.FileAttributes]::Hidden)
+        }
+    }
     & $post
     if ((Test-Path -LiteralPath $envPath) -or (Test-Path -LiteralPath $statePath)) {
         throw 'Fallback files were not cleaned up.'

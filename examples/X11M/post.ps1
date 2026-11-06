@@ -12,7 +12,7 @@ if (-not (Test-Path -LiteralPath $envPath -PathType Leaf)) {
     if ($state.Existed) {
         throw 'The X11M .env file was removed; SSH fixture cleanup was not performed.'
     }
-    Remove-Item -LiteralPath $statePath
+    Remove-Item -LiteralPath $statePath -Force
     return
 }
 
@@ -41,6 +41,6 @@ finally {
 }
 
 if (-not $state.Existed) {
-    Remove-Item -LiteralPath $envPath
+    Remove-Item -LiteralPath $envPath -Force
 }
-Remove-Item -LiteralPath $statePath
+Remove-Item -LiteralPath $statePath -Force

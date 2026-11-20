@@ -12,7 +12,7 @@ terraform {
     }
     local = {
       source  = "hashicorp/local"
-      version = "2.5.1"
+      version = "2.9.1"
     }
     random = {
       source  = "hashicorp/random"
@@ -20,11 +20,11 @@ terraform {
     }
     time = {
       source  = "hashicorp/time"
-      version = "0.12.1"
+      version = "0.14.2"
     }
     tls = {
       source  = "hashicorp/tls"
-      version = "4.0.5"
+      version = "4.4.2"
     }
   }
 }
@@ -47,7 +47,7 @@ locals {
 
 module "naming" {
   source  = "Azure/avm-utl-naming/azure"
-  version = "0.2.0"
+  version = "0.3.0"
 }
 
 # Create a resource group
